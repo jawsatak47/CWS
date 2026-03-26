@@ -1,874 +1,746 @@
-import { useState, useEffect } from "react";
-import { Zap, Trophy, Clock, DollarSign, Star, ExternalLink, Gavel, Users, Award, ChevronRight, Mic, ShieldCheck, Tag, BarChart2 } from "lucide-react";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Canvas Wars 2026 — Live Art Battle · Medford, OR</title>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;600;700;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0;}
+    :root{--red:#ff2244;--red-dim:#cc1a35;--bg:#0d0d0d;--card:#111111;--border:#1f1f1f;--muted:#555;--gold:#ffd700;}
+    html,body,#root{min-height:100%;background:#0d0d0d;}
+    body{font-family:'Barlow',sans-serif;}
+    .bebas{font-family:'Bebas Neue',sans-serif;}
+    .barlow{font-family:'Barlow Condensed',sans-serif;}
 
-// ── STYLES ──────────────────────────────────────────────────────────────────
-const STYLES = `
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;600;700;900&family=Barlow:wght@400;500;600&display=swap');
-*{box-sizing:border-box;margin:0;padding:0;}
-:root{--red:#ff2244;--red-dim:#cc1a35;--bg:#0d0d0d;--card:#111111;--card2:#161616;--border:#1f1f1f;--muted:#555;--gold:#ffd700;}
-body{background:#0d0d0d;}
-.bebas{font-family:'Bebas Neue',sans-serif;}
-.barlow{font-family:'Barlow Condensed',sans-serif;}
-.body{font-family:'Barlow',sans-serif;}
+    @keyframes pulseGlow{0%,100%{box-shadow:0 0 6px var(--red),0 0 14px #ff224455;}50%{box-shadow:0 0 14px var(--red),0 0 32px #ff224488;}}
+    @keyframes goldGlow{0%,100%{box-shadow:0 0 6px #ffd700,0 0 14px #ffd70055;}50%{box-shadow:0 0 14px #ffd700,0 0 32px #ffd70088;}}
+    @keyframes tick{0%{transform:scale(1);}15%{transform:scale(1.06);}30%{transform:scale(1);}}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+    @keyframes blink{0%,100%{opacity:1;}50%{opacity:0;}}
+    @keyframes noise{0%{opacity:.03;}33%{opacity:.05;}66%{opacity:.02;}100%{opacity:.04;}}
 
-@keyframes pulseGlow{0%,100%{box-shadow:0 0 6px var(--red),0 0 14px #ff224455;}50%{box-shadow:0 0 14px var(--red),0 0 32px #ff224488;}}
-@keyframes goldGlow{0%,100%{box-shadow:0 0 6px #ffd700,0 0 14px #ffd70055;}50%{box-shadow:0 0 14px #ffd700,0 0 32px #ffd70088;}}
-@keyframes tick{0%{transform:scale(1);}15%{transform:scale(1.06);}30%{transform:scale(1);}}
-@keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
-@keyframes voteFlash{0%{transform:scale(1);color:#fff;}50%{transform:scale(1.5);color:var(--red);}100%{transform:scale(1);color:#fff;}}
-@keyframes scanlines{0%{background-position:0 0;}100%{background-position:0 4px;}}
-@keyframes noise{0%{opacity:.03;}33%{opacity:.05;}66%{opacity:.02;}100%{opacity:.04;}}
-@keyframes blink{0%,100%{opacity:1;}50%{opacity:0;}}
+    .glow-red{animation:pulseGlow 2s ease-in-out infinite;}
+    .glow-gold{animation:goldGlow 2s ease-in-out infinite;}
+    .tick{animation:tick 1s ease-in-out infinite;}
+    .fade-up{animation:fadeUp .4s ease-out forwards;}
+    .blink{animation:blink 1s step-end infinite;}
 
-.glow-red{animation:pulseGlow 2s ease-in-out infinite;}
-.glow-gold{animation:goldGlow 2s ease-in-out infinite;}
-.tick{animation:tick 1s ease-in-out infinite;}
-.fade-up{animation:fadeUp .4s ease-out forwards;}
-.blink{animation:blink 1s step-end infinite;}
+    .noise-layer{
+      position:fixed;inset:0;pointer-events:none;z-index:9999;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      opacity:.04;mix-blend-mode:overlay;animation:noise .12s steps(1) infinite;
+    }
+    .scanlines{
+      position:fixed;inset:0;pointer-events:none;z-index:9998;
+      background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.06) 2px,rgba(0,0,0,.06) 4px);
+    }
 
-.noise-layer{
-  position:fixed;inset:0;pointer-events:none;z-index:9999;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  opacity:.04;mix-blend-mode:overlay;animation:noise .12s steps(1) infinite;
-}
-.scanlines{
-  position:fixed;inset:0;pointer-events:none;z-index:9998;
-  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.06) 2px,rgba(0,0,0,.06) 4px);
-}
+    .tab-btn{font-family:'Bebas Neue',sans-serif;letter-spacing:.06em;font-size:1rem;padding:.55rem 1.1rem;color:#555;border-bottom:2px solid transparent;cursor:pointer;transition:color .2s;white-space:nowrap;background:none;border-top:none;border-left:none;border-right:none;}
+    .tab-btn:hover{color:#aaa;}
+    .tab-active{color:var(--red)!important;border-bottom-color:var(--red)!important;}
 
-.tab-btn{font-family:'Bebas Neue',sans-serif;letter-spacing:.06em;font-size:1rem;padding:.55rem 1.1rem;color:#555;border-bottom:2px solid transparent;cursor:pointer;transition:color .2s;white-space:nowrap;background:none;border-top:none;border-left:none;border-right:none;}
-.tab-btn:hover{color:#aaa;}
-.tab-active{color:var(--red)!important;border-bottom-color:var(--red)!important;}
+    .artist-card{background:#111;border:1px solid #1f1f1f;border-radius:4px;transition:transform .2s,border-color .2s;}
+    .artist-card:hover{transform:translateY(-3px);border-color:#ff224433;}
 
-.artist-card{background:#111;border:1px solid #1f1f1f;border-radius:4px;transition:transform .2s,border-color .2s;}
-.artist-card:hover{transform:translateY(-3px);border-color:#ff224433;}
+    .status-painting{background:#ff224420;color:var(--red);border:1px solid #ff224440;animation:pulseGlow 2s ease-in-out infinite;}
+    .status-finalist{background:#ffd70020;color:var(--gold);border:1px solid #ffd70040;animation:goldGlow 2s ease-in-out infinite;}
+    .status-eliminated{background:#1a1a1a;color:#444;border:1px solid #2a2a2a;}
 
-.status-painting{background:#ff224420;color:var(--red);border:1px solid #ff224440;animation:pulseGlow 2s ease-in-out infinite;}
-.status-finalist{background:#ffd70020;color:var(--gold);border:1px solid #ffd70040;animation:goldGlow 2s ease-in-out infinite;}
-.status-eliminated{background:#1a1a1a;color:#444;border:1px solid #2a2a2a;}
+    .vote-btn{font-family:'Bebas Neue',sans-serif;letter-spacing:.05em;font-size:.95rem;padding:.4rem 1rem;border-radius:2px;border:1px solid #ff224440;background:transparent;color:#ff2244;cursor:pointer;transition:all .15s;}
+    .vote-btn:hover:not(:disabled){background:var(--red);color:#fff;}
+    .vote-btn:disabled{opacity:.4;cursor:not-allowed;}
+    .voted-btn{background:var(--red)!important;color:#fff!important;border-color:var(--red)!important;}
 
-.vote-btn{font-family:'Bebas Neue',sans-serif;letter-spacing:.05em;font-size:.95rem;padding:.4rem 1rem;border-radius:2px;border:1px solid #ff224440;background:transparent;color:#ff2244;cursor:pointer;transition:all .15s;}
-.vote-btn:hover:not(:disabled){background:var(--red);color:#fff;}
-.vote-btn:disabled{opacity:.4;cursor:not-allowed;}
-.voted-btn{background:var(--red)!important;color:#fff!important;border-color:var(--red)!important;}
+    .bid-btn{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.85rem;padding:.35rem .9rem;border-radius:2px;border:1px solid var(--red);background:transparent;color:var(--red);cursor:pointer;transition:all .15s;}
+    .bid-btn:hover{background:var(--red);color:#fff;}
 
-.bid-btn{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.85rem;padding:.35rem .9rem;border-radius:2px;border:1px solid var(--red);background:transparent;color:var(--red);cursor:pointer;transition:all .15s;}
-.bid-btn:hover{background:var(--red);color:#fff;}
+    .sponsor-t1{background:linear-gradient(135deg,#1a0505,#200808);border:1px solid #ff224430;}
+    .sponsor-t2{background:#111;border:1px solid #ff224420;}
+    .sponsor-t3{background:#0f0f0f;border:1px solid #1e1e1e;}
 
-.sponsor-t1{background:linear-gradient(135deg,#1a0505,#200808);border:1px solid #ff224430;}
-.sponsor-t2{background:#111;border:1px solid #ff224420;}
-.sponsor-t3{background:#0f0f0f;border:1px solid #1e1e1e;}
-.sponsor-cta{font-family:'Bebas Neue',sans-serif;letter-spacing:.08em;font-size:1.05rem;padding:.6rem 1.6rem;background:var(--red);color:#fff;border:none;border-radius:2px;cursor:pointer;transition:background .15s;}
-.sponsor-cta:hover{background:var(--red-dim);}
+    .sponsor-cta{font-family:'Bebas Neue',sans-serif;letter-spacing:.08em;font-size:1.05rem;padding:.6rem 1.6rem;background:var(--red);color:#fff;border:none;border-radius:2px;cursor:pointer;transition:background .15s;}
+    .sponsor-cta:hover{background:var(--red-dim);}
 
-.rank-badge{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;width:2.2rem;height:2.2rem;display:flex;align-items:center;justify-content:center;border-radius:2px;}
+    .rank-badge{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;width:2.2rem;height:2.2rem;display:flex;align-items:center;justify-content:center;border-radius:2px;}
 
-::-webkit-scrollbar{width:3px;}
-::-webkit-scrollbar-track{background:#0d0d0d;}
-::-webkit-scrollbar-thumb{background:var(--red);border-radius:2px;}
+    .entry-bar{height:4px;border-radius:2px;transition:width .6s ease;}
 
-.entry-bar{background:var(--red);height:4px;border-radius:2px;transition:width .6s ease;}
-`;
+    ::-webkit-scrollbar{width:3px;}
+    ::-webkit-scrollbar-track{background:#0d0d0d;}
+    ::-webkit-scrollbar-thumb{background:var(--red);border-radius:2px;}
+  </style>
+</head>
+<body>
+  <div id="root"></div>
 
-// ── DATA ─────────────────────────────────────────────────────────────────────
-const ARTISTS = [
-  { id:1, name:"MIRA SOLANO",    avatar:"MS", medium:"Acrylic / Mixed Media",      status:"PAINTING",   wins:4, color:"#ff6b35", bio:"Portland transplant pushing layered acrylic abstraction into emotional territory. Known for aggressive texture work and unpredictable color decisions.", tags:["Acrylic","Mixed Media","Texture"] },
-  { id:2, name:"DEVIN WATTS",    avatar:"DW", medium:"Watercolor / Ink",           status:"PAINTING",   wins:7, color:"#4ecdc4", bio:"Self-taught Medford artist with seven Canvas Wars wins. Watercolor precision that hits like a gut punch. Crowd favorite for three consecutive seasons.", tags:["Watercolor","Ink","Illustrative"] },
-  { id:3, name:"TAMARA CROSS",   avatar:"TC", medium:"Charcoal / Marker",          status:"FINALIST",   wins:2, color:"#ffd700", bio:"High-contrast charcoal and marker work rooted in street art roots. Southern Oregon native competing in her third Canvas Wars.", tags:["Charcoal","Marker","Street"] },
-  { id:4, name:"KENJI OKAFOR",   avatar:"KO", medium:"Acrylic / Gold Leaf",        status:"PAINTING",   wins:9, color:"#ffd700", bio:"Reigning Canvas Wars champion. Gold leaf applications over gestural acrylic — part sacred, part riot. The one to beat.", tags:["Acrylic","Gold Leaf","Gestural"], featured:true },
-  { id:5, name:"SELENE PARK",    avatar:"SP", medium:"Ballpoint Pen / Acrylic",    status:"PAINTING",   wins:3, color:"#ff2244", bio:"Detail-obsessed ballpoint pen artist crossing into acrylic territory this season. Meticulous. Calculating. Dangerous.", tags:["Ballpoint","Acrylic","Detail"] },
-  { id:6, name:"ROOK VALENTINE", avatar:"RV", medium:"Marker / Watercolor",        status:"ELIMINATED", wins:1, color:"#666",    bio:"Rogue Valley muralist and Canvas Wars rookie. Known for bold marker outlines and vivid street-palette watercolor fills.", tags:["Marker","Watercolor","Mural"] },
-];
+  <script type="text/babel">
+    const { useState, useEffect } = React;
 
-const LEADERBOARD_DATA = {
-  all:   [
-    { rank:1, name:"KENJI OKAFOR",   wins:9, battles:12, rate:75 },
-    { rank:2, name:"DEVIN WATTS",    wins:7, battles:10, rate:70 },
-    { rank:3, name:"MIRA SOLANO",    wins:4, battles:8,  rate:50 },
-    { rank:4, name:"SELENE PARK",    wins:3, battles:7,  rate:43 },
-    { rank:5, name:"TAMARA CROSS",   wins:2, battles:6,  rate:33 },
-    { rank:6, name:"ROOK VALENTINE", wins:1, battles:5,  rate:20 },
-  ],
-  month: [
-    { rank:1, name:"DEVIN WATTS",    wins:2, battles:3,  rate:67 },
-    { rank:2, name:"KENJI OKAFOR",   wins:2, battles:3,  rate:67 },
-    { rank:3, name:"MIRA SOLANO",    wins:1, battles:2,  rate:50 },
-    { rank:4, name:"SELENE PARK",    wins:1, battles:3,  rate:33 },
-    { rank:5, name:"TAMARA CROSS",   wins:0, battles:2,  rate:0  },
-    { rank:6, name:"ROOK VALENTINE", wins:0, battles:1,  rate:0  },
-  ],
-  live:  [
-    { rank:1, name:"TAMARA CROSS",   wins:1, battles:1,  rate:100 },
-    { rank:2, name:"DEVIN WATTS",    wins:0, battles:1,  rate:0  },
-    { rank:3, name:"KENJI OKAFOR",   wins:0, battles:1,  rate:0  },
-    { rank:4, name:"MIRA SOLANO",    wins:0, battles:1,  rate:0  },
-    { rank:5, name:"SELENE PARK",    wins:0, battles:1,  rate:0  },
-    { rank:6, name:"ROOK VALENTINE", wins:0, battles:1,  rate:0  },
-  ],
-};
+    // ── INLINE ICONS (no lucide dependency) ──────────────────────────────────
+    const Icon = ({ d, size = 16, color = "currentColor", style = {} }) => (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
+        stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+        style={style}>
+        <path d={d} />
+      </svg>
+    );
+    const IconZap        = ({size,color}) => <Icon size={size} color={color} d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>;
+    const IconTrophy     = ({size,color}) => <Icon size={size} color={color} d="M6 9H4.5a2.5 2.5 0 010-5H6M18 9h1.5a2.5 2.5 0 000-5H18v14M6 9v14M18 9v14M6 23h12M9 23v-4h6v4"/>;
+    const IconClock      = ({size,color}) => <><Icon size={size} color={color} d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><Icon size={size} color={color} d="M12 6v6l4 2"/></>;
+    const IconDollar     = ({size,color}) => <Icon size={size} color={color} d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>;
+    const IconStar       = ({size,color}) => <Icon size={size} color={color} d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>;
+    const IconExtLink    = ({size,color}) => <Icon size={size} color={color} d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/>;
+    const IconGavel      = ({size,color}) => <Icon size={size} color={color} d="M14.5 2.5l7 7-14 14-7-7 14-14zM2 22l4-4"/>;
+    const IconUsers      = ({size,color}) => <Icon size={size} color={color} d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75M9 7a4 4 0 100 8 4 4 0 000-8z"/>;
+    const IconChevron    = ({size,color,style}) => <Icon size={size} color={color} style={style} d="M9 18l6-6-6-6"/>;
+    const IconMic        = ({size,color}) => <Icon size={size} color={color} d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3zM19 10v2a7 7 0 01-14 0v-2M12 19v4M8 23h8"/>;
+    const IconTag        = ({size,color}) => <Icon size={size} color={color} d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82zM7 7h.01"/>;
 
-const WEEKLY_BATTLES = [
-  { id:1, theme:"???",            revealed:false, status:"LIVE",     hoursLeft:2,  minsLeft:44, entry:5,  participants:12, max:20, prize:"$60 + Feature Slot" },
-  { id:2, theme:"URBAN DECAY",    revealed:true,  status:"UPCOMING", daysLeft:3,   hoursLeft:14, entry:8, participants:0,  max:16, prize:"$100 + Merch" },
-  { id:3, theme:"NEON WILDERNESS",revealed:true,  status:"UPCOMING", daysLeft:7,   hoursLeft:0,  entry:10,participants:0,  max:16, prize:"$150 + Profile Boost" },
-];
+    // ── DATA ─────────────────────────────────────────────────────────────────
+    const ARTISTS = [
+      { id:1, name:"MIRA SOLANO",    avatar:"MS", medium:"Acrylic / Mixed Media",   status:"PAINTING",   wins:4, color:"#ff6b35", bio:"Portland transplant pushing layered acrylic abstraction into emotional territory. Known for aggressive texture work and unpredictable color decisions.", tags:["Acrylic","Mixed Media","Texture"] },
+      { id:2, name:"DEVIN WATTS",    avatar:"DW", medium:"Watercolor / Ink",        status:"PAINTING",   wins:7, color:"#4ecdc4", bio:"Self-taught Medford artist with seven Canvas Wars wins. Watercolor precision that hits like a gut punch. Crowd favorite for three consecutive seasons.", tags:["Watercolor","Ink","Illustrative"] },
+      { id:3, name:"TAMARA CROSS",   avatar:"TC", medium:"Charcoal / Marker",       status:"FINALIST",   wins:2, color:"#ffd700", bio:"High-contrast charcoal and marker work rooted in street art. Southern Oregon native competing in her third Canvas Wars.", tags:["Charcoal","Marker","Street"] },
+      { id:4, name:"KENJI OKAFOR",   avatar:"KO", medium:"Acrylic / Gold Leaf",     status:"PAINTING",   wins:9, color:"#ffd700", bio:"Reigning Canvas Wars champion. Gold leaf applications over gestural acrylic — part sacred, part riot. The one to beat.", tags:["Acrylic","Gold Leaf","Gestural"], featured:true },
+      { id:5, name:"SELENE PARK",    avatar:"SP", medium:"Ballpoint Pen / Acrylic", status:"PAINTING",   wins:3, color:"#ff2244", bio:"Detail-obsessed ballpoint pen artist crossing into acrylic territory this season. Meticulous. Calculating. Dangerous.", tags:["Ballpoint","Acrylic","Detail"] },
+      { id:6, name:"ROOK VALENTINE", avatar:"RV", medium:"Marker / Watercolor",     status:"ELIMINATED", wins:1, color:"#666",    bio:"Rogue Valley muralist and Canvas Wars rookie. Known for bold marker outlines and vivid street-palette watercolor fills.", tags:["Marker","Watercolor","Mural"] },
+    ];
 
-const AUCTION_ITEMS = [
-  { id:1, title:"FRACTURE POINT",      artist:"MIRA SOLANO",    currentBid:180, bids:5,  startBid:100 },
-  { id:2, title:"TIDE MARKERS",        artist:"DEVIN WATTS",    currentBid:240, bids:8,  startBid:150 },
-  { id:3, title:"CARBON ECHO",         artist:"TAMARA CROSS",   currentBid:120, bids:3,  startBid:80  },
-  { id:4, title:"GILT SIEGE",          artist:"KENJI OKAFOR",   currentBid:450, bids:12, startBid:200 },
-  { id:5, title:"BLUE LINE THEORY",    artist:"SELENE PARK",    currentBid:160, bids:6,  startBid:100 },
-  { id:6, title:"VAGRANT SIGNAL",      artist:"ROOK VALENTINE", currentBid:95,  bids:2,  startBid:75  },
-];
-
-const TABS = [
-  { id:"live",    label:"🎨 LIVE BATTLE" },
-  { id:"weekly",  label:"⚡ WEEKLY BATTLES" },
-  { id:"leaders", label:"🏆 LEADERBOARD" },
-  { id:"artists", label:"👤 ARTISTS" },
-  { id:"auction", label:"🔇 SILENT AUCTION" },
-  { id:"sponsors",label:"💰 SPONSORS" },
-];
-
-// ── HELPERS ──────────────────────────────────────────────────────────────────
-function pad(n){ return String(n).padStart(2,"0"); }
-
-function useCountdown(targetDate) {
-  const [diff, setDiff] = useState(0);
-  useEffect(() => {
-    const update = () => {
-      const now = Date.now();
-      const target = new Date(targetDate).getTime();
-      setDiff(Math.max(0, target - now));
+    const LEADERBOARD_DATA = {
+      all:  [
+        {rank:1,name:"KENJI OKAFOR",  wins:9,battles:12,rate:75},
+        {rank:2,name:"DEVIN WATTS",   wins:7,battles:10,rate:70},
+        {rank:3,name:"MIRA SOLANO",   wins:4,battles:8, rate:50},
+        {rank:4,name:"SELENE PARK",   wins:3,battles:7, rate:43},
+        {rank:5,name:"TAMARA CROSS",  wins:2,battles:6, rate:33},
+        {rank:6,name:"ROOK VALENTINE",wins:1,battles:5, rate:20},
+      ],
+      month:[
+        {rank:1,name:"DEVIN WATTS",   wins:2,battles:3,rate:67},
+        {rank:2,name:"KENJI OKAFOR",  wins:2,battles:3,rate:67},
+        {rank:3,name:"MIRA SOLANO",   wins:1,battles:2,rate:50},
+        {rank:4,name:"SELENE PARK",   wins:1,battles:3,rate:33},
+        {rank:5,name:"TAMARA CROSS",  wins:0,battles:2,rate:0},
+        {rank:6,name:"ROOK VALENTINE",wins:0,battles:1,rate:0},
+      ],
+      live: [
+        {rank:1,name:"TAMARA CROSS",  wins:1,battles:1,rate:100},
+        {rank:2,name:"DEVIN WATTS",   wins:0,battles:1,rate:0},
+        {rank:3,name:"KENJI OKAFOR",  wins:0,battles:1,rate:0},
+        {rank:4,name:"MIRA SOLANO",   wins:0,battles:1,rate:0},
+        {rank:5,name:"SELENE PARK",   wins:0,battles:1,rate:0},
+        {rank:6,name:"ROOK VALENTINE",wins:0,battles:1,rate:0},
+      ],
     };
-    update();
-    const t = setInterval(update, 1000);
-    return () => clearInterval(t);
-  }, [targetDate]);
-  const total = Math.floor(diff / 1000);
-  const d = Math.floor(total / 86400);
-  const h = Math.floor((total % 86400) / 3600);
-  const m = Math.floor((total % 3600) / 60);
-  const s = total % 60;
-  return { d, h, m, s, done: diff === 0 };
-}
 
-// ── COUNTDOWN UNIT ───────────────────────────────────────────────────────────
-function CDUnit({ value, label }) {
-  return (
-    <div style={{ display:"flex", flexDirection:"column", alignItems:"center" }}>
-      <div className="bebas tick" style={{
-        fontSize:"clamp(2.5rem,6vw,4.5rem)", lineHeight:1,
-        color:"#ff2244", letterSpacing:".02em",
-        textShadow:"0 0 20px #ff224488",
-        minWidth:"2.2ch", textAlign:"center"
-      }}>
-        {pad(value)}
-      </div>
-      <div className="barlow" style={{ fontSize:".6rem", color:"#555", letterSpacing:".15em", marginTop:2, fontWeight:700 }}>
-        {label}
-      </div>
-    </div>
-  );
-}
+    const WEEKLY_BATTLES = [
+      {id:1,theme:"???",           revealed:false,status:"LIVE",    hoursLeft:2, minsLeft:44,entry:5, participants:12,max:20,prize:"$60 + Feature Slot"},
+      {id:2,theme:"URBAN DECAY",   revealed:true, status:"UPCOMING",daysLeft:3,  hoursLeft:14,entry:8, participants:0, max:16,prize:"$100 + Merch"},
+      {id:3,theme:"NEON WILDERNESS",revealed:true,status:"UPCOMING",daysLeft:7,  hoursLeft:0, entry:10,participants:0, max:16,prize:"$150 + Profile Boost"},
+    ];
 
-function CDSep() {
-  return (
-    <div className="bebas blink" style={{ fontSize:"clamp(2rem,5vw,3.5rem)", color:"#ff224488", paddingBottom:16, lineHeight:1 }}>:</div>
-  );
-}
+    const AUCTION_ITEMS = [
+      {id:1,title:"FRACTURE POINT",   artist:"MIRA SOLANO",    currentBid:180,bids:5, startBid:100},
+      {id:2,title:"TIDE MARKERS",     artist:"DEVIN WATTS",    currentBid:240,bids:8, startBid:150},
+      {id:3,title:"CARBON ECHO",      artist:"TAMARA CROSS",   currentBid:120,bids:3, startBid:80},
+      {id:4,title:"GILT SIEGE",       artist:"KENJI OKAFOR",   currentBid:450,bids:12,startBid:200},
+      {id:5,title:"BLUE LINE THEORY", artist:"SELENE PARK",    currentBid:160,bids:6, startBid:100},
+      {id:6,title:"VAGRANT SIGNAL",   artist:"ROOK VALENTINE", currentBid:95, bids:2, startBid:75},
+    ];
 
-// ── STATUS BADGE ─────────────────────────────────────────────────────────────
-function StatusBadge({ status }) {
-  const cls = status === "PAINTING" ? "status-painting" : status === "FINALIST" ? "status-finalist" : "status-eliminated";
-  return (
-    <span className={`barlow ${cls}`} style={{
-      fontSize:".7rem", fontWeight:700, letterSpacing:".12em",
-      padding:"2px 8px", borderRadius:2, display:"inline-block"
-    }}>
-      {status === "PAINTING" ? "● " : status === "FINALIST" ? "★ " : "✕ "}{status}
-    </span>
-  );
-}
+    const TABS = [
+      {id:"live",    label:"🎨 LIVE BATTLE"},
+      {id:"weekly",  label:"⚡ WEEKLY BATTLES"},
+      {id:"leaders", label:"🏆 LEADERBOARD"},
+      {id:"artists", label:"👤 ARTISTS"},
+      {id:"auction", label:"🔇 SILENT AUCTION"},
+      {id:"sponsors",label:"💰 SPONSORS"},
+    ];
 
-// ── SECTION HEADER ───────────────────────────────────────────────────────────
-function SectionHead({ icon, title, sub }) {
-  return (
-    <div style={{ marginBottom:"1.5rem" }}>
-      <div className="bebas" style={{ fontSize:"clamp(1.8rem,4vw,2.8rem)", color:"#fff", letterSpacing:".04em", display:"flex", alignItems:"center", gap:".5rem" }}>
-        {icon && <span style={{ color:"#ff2244" }}>{icon}</span>} {title}
-      </div>
-      {sub && <div className="barlow" style={{ color:"#555", fontSize:".85rem", marginTop:2 }}>{sub}</div>}
-    </div>
-  );
-}
+    // ── HELPERS ───────────────────────────────────────────────────────────────
+    function pad(n){ return String(n).padStart(2,"0"); }
 
-// ── LIVE BATTLE ───────────────────────────────────────────────────────────────
-function LiveBattle({ votes, setVotes, votedFor, setVotedFor }) {
-  const cd = useCountdown("2026-06-06T23:00:00Z"); // 4PM PDT
+    function useCountdown(targetDate) {
+      const [diff, setDiff] = useState(0);
+      useEffect(() => {
+        const update = () => {
+          setDiff(Math.max(0, new Date(targetDate).getTime() - Date.now()));
+        };
+        update();
+        const t = setInterval(update, 1000);
+        return () => clearInterval(t);
+      }, [targetDate]);
+      const total = Math.floor(diff / 1000);
+      return {
+        d: Math.floor(total / 86400),
+        h: Math.floor((total % 86400) / 3600),
+        m: Math.floor((total % 3600) / 60),
+        s: total % 60,
+        done: diff === 0,
+      };
+    }
 
-  const totalVotes = Object.values(votes).reduce((a,b)=>a+b,0) || 1;
+    // ── SMALL COMPONENTS ─────────────────────────────────────────────────────
+    function CDUnit({ value, label }) {
+      return (
+        <div style={{display:"flex",flexDirection:"column",alignItems:"center"}}>
+          <div className="bebas tick" style={{
+            fontSize:"clamp(2.2rem,5vw,4rem)",lineHeight:1,color:"#ff2244",
+            letterSpacing:".02em",textShadow:"0 0 20px #ff224488",
+            minWidth:"2.2ch",textAlign:"center"
+          }}>
+            {pad(value)}
+          </div>
+          <div className="barlow" style={{fontSize:".6rem",color:"#555",letterSpacing:".15em",marginTop:2,fontWeight:700}}>
+            {label}
+          </div>
+        </div>
+      );
+    }
 
-  const handleVote = (id) => {
-    if (votedFor !== null) return;
-    setVotes(v => ({ ...v, [id]: (v[id]||0)+1 }));
-    setVotedFor(id);
-  };
+    function CDSep() {
+      return (
+        <div className="bebas blink" style={{fontSize:"clamp(1.8rem,4vw,3rem)",color:"#ff224488",paddingBottom:16,lineHeight:1}}>:</div>
+      );
+    }
 
-  return (
-    <div>
-      {/* Header strip */}
-      <div style={{
-        background:"linear-gradient(90deg,#ff224415,#ff224405,transparent)",
-        border:"1px solid #ff224430", borderRadius:4,
-        padding:"1rem 1.5rem", marginBottom:"2rem",
-        display:"flex", flexWrap:"wrap", gap:"1rem", alignItems:"center", justifyContent:"space-between"
-      }}>
+    function StatusBadge({ status }) {
+      const cls = status==="PAINTING" ? "status-painting" : status==="FINALIST" ? "status-finalist" : "status-eliminated";
+      return (
+        <span className={`barlow ${cls}`} style={{fontSize:".7rem",fontWeight:700,letterSpacing:".12em",padding:"2px 8px",borderRadius:2,display:"inline-block"}}>
+          {status==="PAINTING" ? "● " : status==="FINALIST" ? "★ " : "✕ "}{status}
+        </span>
+      );
+    }
+
+    function SectionHead({ icon, title, sub }) {
+      return (
+        <div style={{marginBottom:"1.5rem"}}>
+          <div className="bebas" style={{fontSize:"clamp(1.6rem,3.5vw,2.6rem)",color:"#fff",letterSpacing:".04em",display:"flex",alignItems:"center",gap:".5rem"}}>
+            {icon && <span style={{color:"#ff2244"}}>{icon}</span>} {title}
+          </div>
+          {sub && <div className="barlow" style={{color:"#555",fontSize:".85rem",marginTop:2}}>{sub}</div>}
+        </div>
+      );
+    }
+
+    // ── LIVE BATTLE ───────────────────────────────────────────────────────────
+    function LiveBattle({ votes, setVotes, votedFor, setVotedFor }) {
+      const cd = useCountdown("2026-06-06T23:00:00Z");
+      const totalVotes = Object.values(votes).reduce((a,b)=>a+b,0) || 1;
+
+      const handleVote = (id) => {
+        if (votedFor !== null) return;
+        setVotes(v => ({...v,[id]:(v[id]||0)+1}));
+        setVotedFor(id);
+      };
+
+      return (
         <div>
-          <div className="bebas" style={{ color:"#ff2244", fontSize:".85rem", letterSpacing:".15em" }}>
-            ● LIVE NOW — CANVAS WARS 2026
-          </div>
-          <div className="bebas" style={{ color:"#fff", fontSize:"clamp(1.1rem,3vw,1.6rem)", letterSpacing:".03em" }}>
-            BEAR CREEK PARK · MEDFORD, OR · JUNE 6
-          </div>
-        </div>
-        <div style={{ display:"flex", gap:"1rem", alignItems:"center" }}>
-          <div style={{ textAlign:"center" }}>
-            <div className="barlow" style={{ color:"#555", fontSize:".7rem", letterSpacing:".1em", fontWeight:700 }}>BRUSHES DOWN IN</div>
-            <div style={{ display:"flex", gap:".4rem", alignItems:"center", marginTop:4 }}>
-              <CDUnit value={cd.d} label="DAYS" />
-              <CDSep />
-              <CDUnit value={cd.h} label="HRS" />
-              <CDSep />
-              <CDUnit value={cd.m} label="MIN" />
-              <CDSep />
-              <CDUnit value={cd.s} label="SEC" />
+          {/* Header strip */}
+          <div style={{background:"linear-gradient(90deg,#ff224415,#ff224405,transparent)",border:"1px solid #ff224430",borderRadius:4,padding:"1rem 1.5rem",marginBottom:"2rem",display:"flex",flexWrap:"wrap",gap:"1rem",alignItems:"center",justifyContent:"space-between"}}>
+            <div>
+              <div className="bebas" style={{color:"#ff2244",fontSize:".85rem",letterSpacing:".15em"}}>● LIVE NOW — CANVAS WARS 2026</div>
+              <div className="bebas" style={{color:"#fff",fontSize:"clamp(1rem,2.5vw,1.5rem)",letterSpacing:".03em"}}>BEAR CREEK PARK · MEDFORD, OR · JUNE 6</div>
+            </div>
+            <div>
+              <div className="barlow" style={{color:"#555",fontSize:".7rem",letterSpacing:".1em",fontWeight:700,textAlign:"center"}}>BRUSHES DOWN IN</div>
+              <div style={{display:"flex",gap:".4rem",alignItems:"center",marginTop:4}}>
+                <CDUnit value={cd.d} label="DAYS"/>
+                <CDSep/>
+                <CDUnit value={cd.h} label="HRS"/>
+                <CDSep/>
+                <CDUnit value={cd.m} label="MIN"/>
+                <CDSep/>
+                <CDUnit value={cd.s} label="SEC"/>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
 
-      {/* Judging split */}
-      <div style={{ display:"flex", gap:".75rem", marginBottom:"1.5rem", flexWrap:"wrap" }}>
-        {[["70%", "PANEL JUDGES", "#ff2244"], ["30%", "AUDIENCE VOTE", "#4ecdc4"]].map(([pct,lbl,clr]) => (
-          <div key={lbl} style={{ background:"#111", border:"1px solid #1f1f1f", borderRadius:4, padding:".6rem 1.2rem", display:"flex", alignItems:"center", gap:".7rem" }}>
-            <div className="bebas" style={{ fontSize:"1.6rem", color:clr }}>{pct}</div>
-            <div className="barlow" style={{ color:"#888", fontSize:".75rem", fontWeight:700, letterSpacing:".1em", lineHeight:1.3 }}>{lbl}</div>
-          </div>
-        ))}
-        <div style={{ background:"#111", border:"1px solid #1f1f1f", borderRadius:4, padding:".6rem 1.2rem", display:"flex", alignItems:"center", gap:".7rem" }}>
-          <Users size={16} color="#555" />
-          <div className="barlow" style={{ color:"#666", fontSize:".8rem", fontWeight:600 }}>{Object.values(votes).reduce((a,b)=>a+b,0)} VOTES CAST</div>
-        </div>
-      </div>
-
-      <SectionHead title="COMPETING ARTISTS" />
-
-      {/* Artist grid */}
-      <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))", gap:"1rem" }}>
-        {ARTISTS.map((a,i) => {
-          const v = votes[a.id] || 0;
-          const pct = Math.round((v / totalVotes) * 100);
-          const isVoted = votedFor === a.id;
-          const hasVoted = votedFor !== null;
-          const isElim = a.status === "ELIMINATED";
-
-          return (
-            <div key={a.id} className="artist-card fade-up" style={{ padding:"1.25rem", animationDelay:`${i*0.07}s`, opacity:isElim?.5:1 }}>
-              <div style={{ display:"flex", alignItems:"flex-start", gap:".8rem", marginBottom:"1rem" }}>
-                {/* Avatar */}
-                <div style={{
-                  width:52, height:52, borderRadius:4, flexShrink:0,
-                  background:`linear-gradient(135deg,${a.color}33,${a.color}11)`,
-                  border:`1px solid ${a.color}44`,
-                  display:"flex", alignItems:"center", justifyContent:"center"
-                }}>
-                  <span className="bebas" style={{ fontSize:"1.1rem", color:a.color }}>{a.avatar}</span>
-                </div>
-                <div style={{ flex:1, minWidth:0 }}>
-                  <div className="bebas" style={{ fontSize:"1.1rem", color:isElim?"#444":"#fff", letterSpacing:".03em", lineHeight:1.1 }}>{a.name}</div>
-                  <div className="barlow" style={{ color:"#555", fontSize:".75rem", marginBottom:6 }}>{a.medium}</div>
-                  <StatusBadge status={a.status} />
-                </div>
+          {/* Judging split */}
+          <div style={{display:"flex",gap:".75rem",marginBottom:"1.5rem",flexWrap:"wrap"}}>
+            {[["70%","PANEL JUDGES","#ff2244"],["30%","AUDIENCE VOTE","#4ecdc4"]].map(([pct,lbl,clr]) => (
+              <div key={lbl} style={{background:"#111",border:"1px solid #1f1f1f",borderRadius:4,padding:".6rem 1.2rem",display:"flex",alignItems:"center",gap:".7rem"}}>
+                <div className="bebas" style={{fontSize:"1.6rem",color:clr}}>{pct}</div>
+                <div className="barlow" style={{color:"#888",fontSize:".75rem",fontWeight:700,letterSpacing:".1em",lineHeight:1.3}}>{lbl}</div>
               </div>
-
-              {/* Audience vote bar */}
-              <div style={{ marginBottom:".75rem" }}>
-                <div style={{ display:"flex", justifyContent:"space-between", marginBottom:4 }}>
-                  <div className="barlow" style={{ color:"#444", fontSize:".7rem", fontWeight:700, letterSpacing:".1em" }}>AUDIENCE VOTE</div>
-                  <div className="bebas" style={{ color: isElim?"#333":"#ff2244", fontSize:".9rem" }}>{isElim?"—":`${pct}%`}</div>
-                </div>
-                <div style={{ height:3, background:"#1e1e1e", borderRadius:2 }}>
-                  <div style={{ height:"100%", width:`${isElim?0:pct}%`, background:"#ff2244", borderRadius:2, transition:"width .6s ease" }} />
-                </div>
-              </div>
-
-              <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between" }}>
-                <div className="barlow" style={{ color:"#555", fontSize:".75rem" }}>
-                  <span style={{ color:"#888", fontWeight:700 }}>{v}</span> votes
-                </div>
-                <button
-                  className={`vote-btn ${isVoted?"voted-btn":""}`}
-                  onClick={() => handleVote(a.id)}
-                  disabled={hasVoted || isElim}
-                >
-                  {isVoted ? "✓ VOTED" : isElim ? "ELIMINATED" : "VOTE"}
-                </button>
-              </div>
+            ))}
+            <div style={{background:"#111",border:"1px solid #1f1f1f",borderRadius:4,padding:".6rem 1.2rem",display:"flex",alignItems:"center",gap:".7rem"}}>
+              <IconUsers size={16} color="#555"/>
+              <div className="barlow" style={{color:"#666",fontSize:".8rem",fontWeight:600}}>{Object.values(votes).reduce((a,b)=>a+b,0)} VOTES CAST</div>
             </div>
-          );
-        })}
-      </div>
-
-      {/* Event info strip */}
-      <div style={{ marginTop:"2rem", background:"#111", border:"1px solid #1e1e1e", borderRadius:4, padding:"1rem 1.5rem", display:"flex", flexWrap:"wrap", gap:".75rem 2rem" }}>
-        {[
-          ["CANVAS SIZE","24\" × 24\" Primed Canvas / Birch Panel"],
-          ["MEDIUMS","Pencil · Charcoal · Ballpoint · Marker · Watercolor · Acrylic · Gold Leaf"],
-          ["PRIZES","1st $300  ·  2nd $150  ·  3rd $75 / Sponsor Gift"],
-          ["VENDOR SPACES","Up to 15  ·  $40/space  ·  Own setup required"],
-        ].map(([k,v]) => (
-          <div key={k}>
-            <div className="barlow" style={{ color:"#555", fontSize:".65rem", fontWeight:700, letterSpacing:".1em" }}>{k}</div>
-            <div className="barlow" style={{ color:"#888", fontSize:".8rem" }}>{v}</div>
           </div>
-        ))}
-      </div>
-    </div>
-  );
-}
 
-// ── WEEKLY BATTLES ─────────────────────────────────────────────────────────────
-function WeeklyBattles() {
-  return (
-    <div>
-      <SectionHead icon={<Zap size={24}/>} title="WEEKLY DIGITAL BATTLES" sub="Entry fee: $2–$10 per battle · Square checkout · Winner announced 48h after close" />
-      <div style={{ display:"grid", gap:"1rem" }}>
-        {WEEKLY_BATTLES.map((b,i) => {
-          const isLive = b.status === "LIVE";
-          const pct = Math.round((b.participants/b.max)*100);
-          return (
-            <div key={b.id} className="fade-up" style={{
-              background:"#111", border:`1px solid ${isLive?"#ff224440":"#1f1f1f"}`,
-              borderRadius:4, padding:"1.25rem 1.5rem",
-              animationDelay:`${i*0.1}s`
-            }}>
-              <div style={{ display:"flex", flexWrap:"wrap", justifyContent:"space-between", alignItems:"flex-start", gap:"1rem" }}>
-                <div>
-                  <div style={{ display:"flex", gap:".5rem", alignItems:"center", marginBottom:".4rem" }}>
-                    {isLive && <span className="barlow glow-red" style={{
-                      fontSize:".65rem", fontWeight:700, letterSpacing:".15em", color:"#ff2244",
-                      background:"#ff224420", border:"1px solid #ff224440", padding:"2px 8px", borderRadius:2
-                    }}>● LIVE</span>}
-                    {!isLive && <span className="barlow" style={{
-                      fontSize:".65rem", fontWeight:700, letterSpacing:".15em", color:"#555",
-                      background:"#1a1a1a", border:"1px solid #222", padding:"2px 8px", borderRadius:2
-                    }}>UPCOMING</span>}
-                    <span className="barlow" style={{ color:"#444", fontSize:".75rem" }}>BATTLE #{b.id}</span>
+          <SectionHead title="COMPETING ARTISTS"/>
+
+          {/* Artist grid */}
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(270px,1fr))",gap:"1rem"}}>
+            {ARTISTS.map((a,i) => {
+              const v = votes[a.id] || 0;
+              const pct = Math.round((v/totalVotes)*100);
+              const isVoted = votedFor===a.id;
+              const hasVoted = votedFor!==null;
+              const isElim = a.status==="ELIMINATED";
+              return (
+                <div key={a.id} className="artist-card fade-up" style={{padding:"1.25rem",animationDelay:`${i*0.07}s`,opacity:isElim?.5:1}}>
+                  <div style={{display:"flex",alignItems:"flex-start",gap:".8rem",marginBottom:"1rem"}}>
+                    <div style={{width:52,height:52,borderRadius:4,flexShrink:0,background:`linear-gradient(135deg,${a.color}33,${a.color}11)`,border:`1px solid ${a.color}44`,display:"flex",alignItems:"center",justifyContent:"center"}}>
+                      <span className="bebas" style={{fontSize:"1.1rem",color:a.color}}>{a.avatar}</span>
+                    </div>
+                    <div style={{flex:1,minWidth:0}}>
+                      <div className="bebas" style={{fontSize:"1.1rem",color:isElim?"#444":"#fff",letterSpacing:".03em",lineHeight:1.1}}>{a.name}</div>
+                      <div className="barlow" style={{color:"#555",fontSize:".75rem",marginBottom:6}}>{a.medium}</div>
+                      <StatusBadge status={a.status}/>
+                    </div>
                   </div>
-                  <div className="bebas" style={{ fontSize:isLive?"2rem":"1.5rem", color: b.revealed?"#fff":"#ff2244", letterSpacing:".04em" }}>
-                    {b.revealed ? b.theme : <span style={{display:"flex",alignItems:"center",gap:".4rem"}}><span style={{opacity:.5}}>THEME LOCKED</span> <span style={{fontSize:"1rem",color:"#ff224477"}}>🔒</span></span>}
+                  <div style={{marginBottom:".75rem"}}>
+                    <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}>
+                      <div className="barlow" style={{color:"#444",fontSize:".7rem",fontWeight:700,letterSpacing:".1em"}}>AUDIENCE VOTE</div>
+                      <div className="bebas" style={{color:isElim?"#333":"#ff2244",fontSize:".9rem"}}>{isElim?"—":`${pct}%`}</div>
+                    </div>
+                    <div style={{height:3,background:"#1e1e1e",borderRadius:2}}>
+                      <div style={{height:"100%",width:`${isElim?0:pct}%`,background:"#ff2244",borderRadius:2,transition:"width .6s ease"}}/>
+                    </div>
                   </div>
-                  <div className="barlow" style={{ color:"#555", fontSize:".8rem", marginTop:2 }}>Prize: <span style={{color:"#888"}}>{b.prize}</span></div>
-                </div>
-                <div style={{ textAlign:"right" }}>
-                  <div className="barlow" style={{ color:"#555", fontSize:".65rem", letterSpacing:".1em", fontWeight:700, marginBottom:2 }}>TIME REMAINING</div>
-                  <div className="bebas" style={{ fontSize:"1.6rem", color: isLive?"#ff2244":"#666", letterSpacing:".02em" }}>
-                    {isLive ? `${b.hoursLeft}h ${b.minsLeft}m` : b.daysLeft ? `${b.daysLeft}d ${b.hoursLeft}h` : `${b.hoursLeft}h`}
-                  </div>
-                  <div className="barlow" style={{ color:"#555", fontSize:".7rem", marginTop:4 }}>
-                    Entry: <span style={{color:"#ff2244",fontWeight:700}}>${b.entry}</span>
+                  <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+                    <div className="barlow" style={{color:"#555",fontSize:".75rem"}}><span style={{color:"#888",fontWeight:700}}>{v}</span> votes</div>
+                    <button className={`vote-btn ${isVoted?"voted-btn":""}`} onClick={()=>handleVote(a.id)} disabled={hasVoted||isElim}>
+                      {isVoted?"✓ VOTED":isElim?"ELIMINATED":"VOTE"}
+                    </button>
                   </div>
                 </div>
-              </div>
-
-              <div style={{ marginTop:"1rem" }}>
-                <div style={{ display:"flex", justifyContent:"space-between", marginBottom:4 }}>
-                  <div className="barlow" style={{ color:"#444", fontSize:".7rem", fontWeight:700, letterSpacing:".1em" }}>SLOTS FILLED</div>
-                  <div className="barlow" style={{ color:"#666", fontSize:".75rem" }}>{b.participants} / {b.max}</div>
-                </div>
-                <div style={{ height:3, background:"#1e1e1e", borderRadius:2 }}>
-                  <div className="entry-bar" style={{ width:`${pct}%`, background: isLive?"#ff2244":"#333" }} />
-                </div>
-              </div>
-
-              <div style={{ marginTop:"1rem", display:"flex", gap:".75rem", flexWrap:"wrap" }}>
-                <a href="https://square.link/placeholder" target="_blank" rel="noreferrer" style={{ textDecoration:"none" }}>
-                  <button className="sponsor-cta" style={{ display:"flex", alignItems:"center", gap:".4rem", fontSize:".9rem" }}>
-                    ENTER BATTLE → PAY VIA SQUARE <ExternalLink size={13}/>
-                  </button>
-                </a>
-                <button style={{
-                  fontFamily:"'Barlow Condensed',sans-serif", fontWeight:700, fontSize:".85rem",
-                  padding:".6rem 1rem", background:"transparent", border:"1px solid #2a2a2a", color:"#555",
-                  borderRadius:2, cursor:"pointer"
-                }}>
-                  BATTLE RULES
-                </button>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
-// ── LEADERBOARD ───────────────────────────────────────────────────────────────
-function Leaderboard() {
-  const [filter, setFilter] = useState("all");
-  const data = LEADERBOARD_DATA[filter];
-
-  const rankBg = { 1:"#ffd700", 2:"#aaa", 3:"#cd7f32" };
-  const rankLabel = { 1:"🥇", 2:"🥈", 3:"🥉" };
-
-  return (
-    <div>
-      <SectionHead icon={<Trophy size={24}/>} title="RANKINGS" />
-      <div style={{ display:"flex", gap:".5rem", marginBottom:"1.5rem", flexWrap:"wrap" }}>
-        {[["all","ALL TIME"],["month","THIS MONTH"],["live","LIVE EVENT"]].map(([k,l]) => (
-          <button key={k} className={`tab-btn ${filter===k?"tab-active":""}`}
-            style={{ border:"1px solid #1e1e1e", borderRadius:3, fontSize:".85rem" }}
-            onClick={() => setFilter(k)}>
-            {l}
-          </button>
-        ))}
-      </div>
-      <div style={{ display:"grid", gap:".5rem" }}>
-        {data.map((r,i) => (
-          <div key={r.rank} className="fade-up" style={{
-            background:"#111", border:`1px solid ${r.rank<=3?"#ff224420":"#1a1a1a"}`,
-            borderRadius:4, padding:".85rem 1.25rem",
-            display:"flex", alignItems:"center", gap:"1rem",
-            animationDelay:`${i*0.06}s`
-          }}>
-            <div className="rank-badge" style={{
-              background: rankBg[r.rank] ? `${rankBg[r.rank]}22` : "#1a1a1a",
-              color: rankBg[r.rank] || "#444",
-              border: `1px solid ${rankBg[r.rank] ? rankBg[r.rank]+"44" : "#222"}`,
-              fontSize: r.rank <= 3 ? "1.2rem" : "1rem",
-              minWidth:"2.2rem"
-            }}>
-              {rankLabel[r.rank] || `#${r.rank}`}
-            </div>
-            <div className="bebas" style={{ flex:1, fontSize:"1.15rem", color: r.rank===1?"#ffd700": r.rank<=3?"#ddd":"#999", letterSpacing:".03em" }}>
-              {r.name}
-            </div>
-            <div style={{ display:"flex", gap:"1.5rem", textAlign:"center" }}>
-              {[["WINS",r.wins,"#ff2244"],["BATTLES",r.battles,"#666"],["WIN RATE",`${r.rate}%`,r.rate>50?"#4ecdc4":"#555"]].map(([l,v,c]) => (
-                <div key={l}>
-                  <div className="bebas" style={{ fontSize:"1.3rem", color:c, lineHeight:1 }}>{v}</div>
-                  <div className="barlow" style={{ color:"#444", fontSize:".6rem", fontWeight:700, letterSpacing:".1em" }}>{l}</div>
-                </div>
-              ))}
-            </div>
+              );
+            })}
           </div>
-        ))}
-      </div>
-    </div>
-  );
-}
 
-// ── ARTIST PROFILES ──────────────────────────────────────────────────────────
-function ArtistProfiles() {
-  const [selected, setSelected] = useState(null);
-  const a = selected !== null ? ARTISTS[selected] : null;
-
-  return (
-    <div>
-      <SectionHead icon={<Star size={24}/>} title="ARTIST ROSTER" sub="Canvas Wars 2026 · 6 Selected Competitors" />
-
-      {/* Featured artist */}
-      {(() => {
-        const feat = ARTISTS.find(x=>x.featured);
-        if (!feat) return null;
-        return (
-          <div style={{
-            background:"linear-gradient(135deg,#ffd70008,#1a1408)", border:"1px solid #ffd70030",
-            borderRadius:4, padding:"1.25rem 1.5rem", marginBottom:"1.5rem",
-            display:"flex", flexWrap:"wrap", gap:"1rem", alignItems:"center"
-          }} className="glow-gold">
-            <div style={{ display:"flex", alignItems:"center", gap:"1rem" }}>
-              <div style={{
-                width:64, height:64, borderRadius:4,
-                background:"linear-gradient(135deg,#ffd70033,#ffd70011)",
-                border:"1px solid #ffd70055", display:"flex", alignItems:"center", justifyContent:"center"
-              }}>
-                <span className="bebas" style={{ fontSize:"1.4rem", color:"#ffd700" }}>{feat.avatar}</span>
+          {/* Event info */}
+          <div style={{marginTop:"2rem",background:"#111",border:"1px solid #1e1e1e",borderRadius:4,padding:"1rem 1.5rem",display:"flex",flexWrap:"wrap",gap:".75rem 2rem"}}>
+            {[
+              ["CANVAS SIZE","24\" × 24\" Primed Canvas / Birch Panel"],
+              ["MEDIUMS","Pencil · Charcoal · Ballpoint · Marker · Watercolor · Acrylic · Gold Leaf"],
+              ["PRIZES","1st $300 · 2nd $150 · 3rd $75 / Sponsor Gift"],
+              ["VENDOR SPACES","Up to 15 · $40/space · Own setup required"],
+            ].map(([k,v]) => (
+              <div key={k}>
+                <div className="barlow" style={{color:"#555",fontSize:".65rem",fontWeight:700,letterSpacing:".1em"}}>{k}</div>
+                <div className="barlow" style={{color:"#888",fontSize:".8rem"}}>{v}</div>
               </div>
-              <div>
-                <div className="barlow" style={{ color:"#ffd700", fontSize:".65rem", fontWeight:700, letterSpacing:".15em", marginBottom:2 }}>★ FEATURED ARTIST · SPONSOR SLOT</div>
-                <div className="bebas" style={{ fontSize:"1.6rem", color:"#fff" }}>{feat.name}</div>
-                <div className="barlow" style={{ color:"#888", fontSize:".8rem" }}>{feat.medium}</div>
-              </div>
-            </div>
-            <div style={{ flex:1, minWidth:200 }}>
-              <div className="barlow" style={{ color:"#666", fontSize:".85rem", lineHeight:1.5 }}>{feat.bio}</div>
-            </div>
-            <div style={{ display:"flex", gap:".6rem", flexWrap:"wrap" }}>
-              <a href="#" style={{ textDecoration:"none" }}>
-                <button className="bid-btn" style={{ borderColor:"#ffd700", color:"#ffd700" }}>VIEW MERCH TABLE</button>
-              </a>
-              <a href="#" style={{ textDecoration:"none" }}>
-                <button className="bid-btn" style={{ borderColor:"#555", color:"#666", display:"flex", alignItems:"center", gap:4 }}>SOCIAL <ExternalLink size={12}/></button>
-              </a>
-            </div>
-          </div>
-        );
-      })()}
-
-      <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))", gap:"1rem" }}>
-        {ARTISTS.map((a,i) => (
-          <div key={a.id} className="artist-card fade-up" style={{
-            padding:"1.1rem", cursor:"pointer", animationDelay:`${i*0.07}s`,
-            borderColor: selected===i ? "#ff224440" : "#1f1f1f"
-          }} onClick={() => setSelected(selected===i?null:i)}>
-            <div style={{ display:"flex", gap:".75rem", alignItems:"center", marginBottom:".75rem" }}>
-              <div style={{
-                width:44, height:44, borderRadius:3,
-                background:`linear-gradient(135deg,${a.color}22,${a.color}08)`,
-                border:`1px solid ${a.color}33`,
-                display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0
-              }}>
-                <span className="bebas" style={{ color:a.color, fontSize:".95rem" }}>{a.avatar}</span>
-              </div>
-              <div>
-                <div className="bebas" style={{ color:"#fff", fontSize:"1rem", letterSpacing:".03em" }}>{a.name}</div>
-                <div className="barlow" style={{ color:"#555", fontSize:".72rem" }}>{a.medium}</div>
-              </div>
-            </div>
-            <div style={{ display:"flex", gap:".4rem", flexWrap:"wrap", marginBottom:".75rem" }}>
-              {a.tags.map(t => (
-                <span key={t} className="barlow" style={{
-                  fontSize:".65rem", fontWeight:700, letterSpacing:".08em",
-                  padding:"2px 7px", background:"#1a1a1a", border:"1px solid #252525", borderRadius:2, color:"#666"
-                }}>{t}</span>
-              ))}
-            </div>
-            {selected===i && (
-              <div className="fade-up">
-                <div className="barlow" style={{ color:"#777", fontSize:".8rem", lineHeight:1.55, marginBottom:".75rem" }}>{a.bio}</div>
-                <div style={{ display:"flex", gap:".5rem" }}>
-                  <a href="#" style={{textDecoration:"none"}}><button className="bid-btn" style={{fontSize:".75rem",padding:".3rem .7rem"}}>MERCH TABLE</button></a>
-                  <a href="#" style={{textDecoration:"none"}}><button className="bid-btn" style={{fontSize:".75rem",padding:".3rem .7rem",borderColor:"#333",color:"#555"}}>SOCIAL ↗</button></a>
-                </div>
-              </div>
-            )}
-            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginTop:".6rem" }}>
-              <div className="barlow" style={{ color:"#444", fontSize:".72rem" }}>
-                <span style={{color:"#ff2244",fontWeight:700}}>{a.wins}</span> all-time wins
-              </div>
-              <ChevronRight size={14} color={selected===i?"#ff2244":"#333"} style={{ transform: selected===i?"rotate(90deg)":"none", transition:"transform .2s" }} />
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-// ── SILENT AUCTION ────────────────────────────────────────────────────────────
-function SilentAuction() {
-  const [bids, setBids] = useState(() => {
-    const init = {};
-    AUCTION_ITEMS.forEach(a => { init[a.id] = a.currentBid; });
-    return init;
-  });
-  const [bidCounts, setBidCounts] = useState(() => {
-    const init = {};
-    AUCTION_ITEMS.forEach(a => { init[a.id] = a.bids; });
-    return init;
-  });
-  const [lastBid, setLastBid] = useState(null);
-
-  const placeBid = (id) => {
-    setBids(b => ({ ...b, [id]: b[id] + 10 }));
-    setBidCounts(c => ({ ...c, [id]: c[id] + 1 }));
-    setLastBid(id);
-    setTimeout(() => setLastBid(null), 800);
-  };
-
-  const auctionCd = useCountdown("2026-06-06T22:00:00Z"); // 3PM PDT silent closes
-  const liveCd = useCountdown("2026-06-07T01:30:00Z"); // 6:30PM PDT live closes
-
-  return (
-    <div>
-      <SectionHead icon={<Gavel size={24}/>} title="SILENT AUCTION" sub="Each 24×24 canvas by a competing artist · Revenue split: Artist 70% / Event 30%" />
-
-      {/* Auction phase strip */}
-      <div style={{ display:"flex", flexWrap:"wrap", gap:"1rem", marginBottom:"1.5rem" }}>
-        {[
-          ["SILENT AUCTION", "11:00 AM – 5:00 PM", auctionCd, "#ff2244"],
-          ["LIVE AUCTION", "5:00 PM – 6:30 PM", liveCd, "#ffd700"],
-        ].map(([label, time, cd, clr]) => (
-          <div key={label} style={{
-            flex:1, minWidth:200, background:"#111", border:`1px solid ${clr}22`,
-            borderRadius:4, padding:"1rem 1.25rem"
-          }}>
-            <div className="barlow" style={{ color:"#555", fontSize:".65rem", fontWeight:700, letterSpacing:".12em" }}>{label}</div>
-            <div className="bebas" style={{ color:clr, fontSize:"1.1rem", marginTop:2 }}>{time}</div>
-            <div style={{ display:"flex", gap:".5rem", alignItems:"center", marginTop:6 }}>
-              <Clock size={11} color="#555"/>
-              <div className="barlow" style={{ color:"#666", fontSize:".75rem" }}>
-                {cd.d}d {cd.h}h {cd.m}m remaining
-              </div>
-            </div>
-          </div>
-        ))}
-        <div style={{
-          flex:1, minWidth:200, background:"#111", border:"1px solid #1e1e1e",
-          borderRadius:4, padding:"1rem 1.25rem", display:"flex", flexDirection:"column", justifyContent:"center"
-        }}>
-          <div className="barlow" style={{ color:"#555", fontSize:".65rem", fontWeight:700, letterSpacing:".12em" }}>REVENUE SPLIT</div>
-          <div style={{ display:"flex", gap:".75rem", marginTop:6, alignItems:"center" }}>
-            <div className="bebas" style={{ fontSize:"2rem", color:"#4ecdc4", lineHeight:1 }}>70%</div>
-            <div className="barlow" style={{ color:"#666", fontSize:".75rem", lineHeight:1.3 }}>TO ARTIST</div>
-            <div className="bebas" style={{ fontSize:"1.2rem", color:"#333", lineHeight:1 }}>+</div>
-            <div className="bebas" style={{ fontSize:"2rem", color:"#ff2244", lineHeight:1 }}>30%</div>
-            <div className="barlow" style={{ color:"#666", fontSize:".75rem", lineHeight:1.3 }}>TO EVENT</div>
+            ))}
           </div>
         </div>
-      </div>
+      );
+    }
 
-      <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(270px,1fr))", gap:"1rem" }}>
-        {AUCTION_ITEMS.map((item,i) => {
-          const isFlash = lastBid === item.id;
-          return (
-            <div key={item.id} className="artist-card fade-up" style={{
-              padding:"1.2rem", animationDelay:`${i*0.07}s`,
-              borderColor: isFlash ? "#ff224466" : "#1f1f1f",
-              transition:"border-color .3s"
-            }}>
-              {/* Artwork placeholder */}
-              <div style={{
-                height:140, background:"#0a0a0a", border:"1px solid #1a1a1a", borderRadius:3,
-                marginBottom:"1rem", display:"flex", alignItems:"center", justifyContent:"center",
-                position:"relative", overflow:"hidden"
-              }}>
-                <div style={{
-                  position:"absolute", inset:0,
-                  background:`linear-gradient(135deg,${ARTISTS.find(a=>a.name===item.artist)?.color || "#ff2244"}11,transparent)`,
-                }}/>
-                <div style={{ textAlign:"center", position:"relative", zIndex:1 }}>
-                  <div className="bebas" style={{ color:"#222", fontSize:"2.5rem", letterSpacing:".05em" }}>{ARTISTS.find(a=>a.name===item.artist)?.avatar}</div>
-                  <div className="barlow" style={{ color:"#333", fontSize:".65rem", letterSpacing:".1em" }}>24" × 24" CANVAS</div>
-                </div>
-              </div>
-
-              <div className="bebas" style={{ color:"#fff", fontSize:"1.2rem", letterSpacing:".03em", marginBottom:2 }}>{item.title}</div>
-              <div className="barlow" style={{ color:"#555", fontSize:".75rem", marginBottom:"1rem" }}>by {item.artist}</div>
-
-              <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-end", marginBottom:".75rem" }}>
-                <div>
-                  <div className="barlow" style={{ color:"#444", fontSize:".65rem", fontWeight:700, letterSpacing:".1em" }}>CURRENT BID</div>
-                  <div className="bebas" style={{
-                    fontSize:"1.8rem", lineHeight:1, color: isFlash ? "#4ecdc4" : "#ff2244",
-                    transition:"color .3s", textShadow: isFlash ? "0 0 20px #4ecdc4" : "none"
-                  }}>
-                    ${bids[item.id]}
+    // ── WEEKLY BATTLES ────────────────────────────────────────────────────────
+    function WeeklyBattles() {
+      return (
+        <div>
+          <SectionHead icon={<IconZap size={22} color="#ff2244"/>} title="WEEKLY DIGITAL BATTLES" sub="Entry fee: $2–$10 per battle · Square checkout · Winner announced 48h after close"/>
+          <div style={{display:"grid",gap:"1rem"}}>
+            {WEEKLY_BATTLES.map((b,i) => {
+              const isLive = b.status==="LIVE";
+              const pct = Math.round((b.participants/b.max)*100);
+              return (
+                <div key={b.id} className="fade-up" style={{background:"#111",border:`1px solid ${isLive?"#ff224440":"#1f1f1f"}`,borderRadius:4,padding:"1.25rem 1.5rem",animationDelay:`${i*0.1}s`}}>
+                  <div style={{display:"flex",flexWrap:"wrap",justifyContent:"space-between",alignItems:"flex-start",gap:"1rem"}}>
+                    <div>
+                      <div style={{display:"flex",gap:".5rem",alignItems:"center",marginBottom:".4rem"}}>
+                        {isLive && <span className="barlow glow-red" style={{fontSize:".65rem",fontWeight:700,letterSpacing:".15em",color:"#ff2244",background:"#ff224420",border:"1px solid #ff224440",padding:"2px 8px",borderRadius:2}}>● LIVE</span>}
+                        {!isLive && <span className="barlow" style={{fontSize:".65rem",fontWeight:700,letterSpacing:".15em",color:"#555",background:"#1a1a1a",border:"1px solid #222",padding:"2px 8px",borderRadius:2}}>UPCOMING</span>}
+                        <span className="barlow" style={{color:"#444",fontSize:".75rem"}}>BATTLE #{b.id}</span>
+                      </div>
+                      <div className="bebas" style={{fontSize:isLive?"2rem":"1.5rem",color:b.revealed?"#fff":"#ff2244",letterSpacing:".04em"}}>
+                        {b.revealed ? b.theme : <span>THEME LOCKED 🔒</span>}
+                      </div>
+                      <div className="barlow" style={{color:"#555",fontSize:".8rem",marginTop:2}}>Prize: <span style={{color:"#888"}}>{b.prize}</span></div>
+                    </div>
+                    <div style={{textAlign:"right"}}>
+                      <div className="barlow" style={{color:"#555",fontSize:".65rem",letterSpacing:".1em",fontWeight:700,marginBottom:2}}>TIME REMAINING</div>
+                      <div className="bebas" style={{fontSize:"1.6rem",color:isLive?"#ff2244":"#666",letterSpacing:".02em"}}>
+                        {isLive ? `${b.hoursLeft}h ${b.minsLeft}m` : b.daysLeft ? `${b.daysLeft}d ${b.hoursLeft}h` : `${b.hoursLeft}h`}
+                      </div>
+                      <div className="barlow" style={{color:"#555",fontSize:".7rem",marginTop:4}}>Entry: <span style={{color:"#ff2244",fontWeight:700}}>${b.entry}</span></div>
+                    </div>
+                  </div>
+                  <div style={{marginTop:"1rem"}}>
+                    <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}>
+                      <div className="barlow" style={{color:"#444",fontSize:".7rem",fontWeight:700,letterSpacing:".1em"}}>SLOTS FILLED</div>
+                      <div className="barlow" style={{color:"#666",fontSize:".75rem"}}>{b.participants} / {b.max}</div>
+                    </div>
+                    <div style={{height:3,background:"#1e1e1e",borderRadius:2}}>
+                      <div className="entry-bar" style={{width:`${pct}%`,background:isLive?"#ff2244":"#333"}}/>
+                    </div>
+                  </div>
+                  <div style={{marginTop:"1rem",display:"flex",gap:".75rem",flexWrap:"wrap"}}>
+                    <a href="https://square.link/placeholder" target="_blank" rel="noreferrer" style={{textDecoration:"none"}}>
+                      <button className="sponsor-cta" style={{display:"flex",alignItems:"center",gap:".4rem",fontSize:".9rem"}}>
+                        ENTER BATTLE → PAY VIA SQUARE <IconExtLink size={13}/>
+                      </button>
+                    </a>
+                    <button style={{fontFamily:"'Barlow Condensed',sans-serif",fontWeight:700,fontSize:".85rem",padding:".6rem 1rem",background:"transparent",border:"1px solid #2a2a2a",color:"#555",borderRadius:2,cursor:"pointer"}}>
+                      BATTLE RULES
+                    </button>
                   </div>
                 </div>
-                <div style={{ textAlign:"right" }}>
-                  <div className="barlow" style={{ color:"#444", fontSize:".65rem", fontWeight:700, letterSpacing:".1em" }}>BIDS</div>
-                  <div className="bebas" style={{ fontSize:"1.4rem", color:"#666" }}>{bidCounts[item.id]}</div>
-                </div>
-              </div>
-
-              <button className="bid-btn" style={{ width:"100%", padding:".5rem", fontSize:".9rem" }} onClick={() => placeBid(item.id)}>
-                {isFlash ? "✓ BID PLACED!" : `BID $${bids[item.id]+10} →`}
-              </button>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
-// ── SPONSORS ──────────────────────────────────────────────────────────────────
-function Sponsors() {
-  return (
-    <div>
-      <SectionHead icon={<DollarSign size={24}/>} title="SPONSORSHIP" sub="Canvas Wars 2026 · Bear Creek Park · Medford, OR · June 6" />
-
-      {/* T1 */}
-      <div style={{ marginBottom:"1.5rem" }}>
-        <div className="barlow" style={{ color:"#555", fontSize:".65rem", fontWeight:700, letterSpacing:".2em", marginBottom:".75rem" }}>TIER 1 · TITLE SPONSOR · $300–$500</div>
-        <div className="sponsor-t1 glow-red" style={{ borderRadius:4, padding:"2rem", textAlign:"center" }}>
-          <div className="barlow" style={{ color:"#555", fontSize:".7rem", fontWeight:700, letterSpacing:".15em" }}>CANVAS WARS 2026 PRESENTED BY</div>
-          <div className="bebas" style={{ fontSize:"clamp(1.8rem,5vw,3rem)", color:"#ff224466", letterSpacing:".08em", marginTop:".3rem" }}>[ YOUR BRAND HERE ]</div>
-          <div className="barlow" style={{ color:"#444", fontSize:".8rem", marginTop:".5rem" }}>Full logo placement · Stage banner · MC intro · Social media tags · Sponsor table</div>
-          <div style={{ marginTop:"1.25rem" }}>
-            <button className="sponsor-cta">BECOME TITLE SPONSOR →</button>
+              );
+            })}
           </div>
         </div>
-      </div>
+      );
+    }
 
-      {/* T2 */}
-      <div style={{ marginBottom:"1.5rem" }}>
-        <div className="barlow" style={{ color:"#555", fontSize:".65rem", fontWeight:700, letterSpacing:".2em", marginBottom:".75rem" }}>TIER 2 · SUPPORTING SPONSORS · $150–$300</div>
-        <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(240px,1fr))", gap:"1rem" }}>
-          {[1,2].map(n => (
-            <div key={n} className="sponsor-t2" style={{ borderRadius:4, padding:"1.25rem", textAlign:"center" }}>
-              <div className="bebas" style={{ color:"#333", fontSize:"1.6rem", letterSpacing:".05em" }}>SUPPORTING SPONSOR</div>
-              <div className="barlow" style={{ color:"#333", fontSize:".75rem", marginTop:4 }}>Logo · MC shoutout · Program listing</div>
-              <div style={{ marginTop:"1rem" }}>
-                <button className="sponsor-cta" style={{ fontSize:".8rem", padding:".4rem 1rem" }}>CLAIM SLOT</button>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* T3 */}
-      <div style={{ marginBottom:"2rem" }}>
-        <div className="barlow" style={{ color:"#555", fontSize:".65rem", fontWeight:700, letterSpacing:".2em", marginBottom:".75rem" }}>TIER 3 · IN-KIND / COMMUNITY · PRODUCT GIFTS OR CONTRIBUTIONS</div>
-        <div style={{ display:"flex", flexWrap:"wrap", gap:".5rem" }}>
-          {["IN-KIND PARTNER","IN-KIND PARTNER","COMMUNITY BACKER","COMMUNITY BACKER","ART SUPPLIER","LOCAL BUSINESS"].map((l,i) => (
-            <div key={i} className="sponsor-t3" style={{ borderRadius:3, padding:".5rem 1rem", display:"flex", alignItems:"center", gap:".4rem" }}>
-              <Tag size={11} color="#444"/>
-              <span className="barlow" style={{ color:"#444", fontSize:".75rem", fontWeight:600 }}>{l}</span>
-            </div>
-          ))}
-          <div style={{ background:"#111", border:"1px dashed #2a2a2a", borderRadius:3, padding:".5rem 1rem", display:"flex", alignItems:"center", gap:".4rem", cursor:"pointer" }}>
-            <span className="barlow" style={{ color:"#ff224455", fontSize:".75rem", fontWeight:600 }}>+ ADD YOUR BRAND</span>
+    // ── LEADERBOARD ───────────────────────────────────────────────────────────
+    function Leaderboard() {
+      const [filter, setFilter] = useState("all");
+      const data = LEADERBOARD_DATA[filter];
+      const rankBg = {1:"#ffd700",2:"#aaa",3:"#cd7f32"};
+      const rankLabel = {1:"🥇",2:"🥈",3:"🥉"};
+      return (
+        <div>
+          <SectionHead icon={<IconTrophy size={22} color="#ff2244"/>} title="RANKINGS"/>
+          <div style={{display:"flex",gap:".5rem",marginBottom:"1.5rem",flexWrap:"wrap"}}>
+            {[["all","ALL TIME"],["month","THIS MONTH"],["live","LIVE EVENT"]].map(([k,l]) => (
+              <button key={k} className={`tab-btn ${filter===k?"tab-active":""}`} style={{border:"1px solid #1e1e1e",borderRadius:3,fontSize:".85rem"}} onClick={()=>setFilter(k)}>{l}</button>
+            ))}
           </div>
-        </div>
-      </div>
-
-      {/* Tier breakdown table */}
-      <div style={{ background:"#111", border:"1px solid #1e1e1e", borderRadius:4, padding:"1.25rem 1.5rem" }}>
-        <div className="bebas" style={{ color:"#888", fontSize:"1.1rem", letterSpacing:".05em", marginBottom:"1rem" }}>SPONSORSHIP TIERS</div>
-        <div style={{ display:"grid", gap:".5rem" }}>
-          {[
-            { tier:"T1", label:"Title Sponsor", range:"$300–$500", perks:["Presented By naming rights","Stage banner placement","MC intro shoutout","Social media mentions","Sponsor table at event"] },
-            { tier:"T2", label:"Supporting Sponsor", range:"$150–$300", perks:["Logo on event materials","MC shoutout","Program listing","Social tag"] },
-            { tier:"T3", label:"In-Kind / Community", range:"Product / Gift", perks:["Badge acknowledgment","Program mention","Community recognition"] },
-          ].map(s => (
-            <div key={s.tier} style={{ display:"flex", gap:"1rem", padding:".75rem", background:"#0f0f0f", borderRadius:3, flexWrap:"wrap", alignItems:"flex-start" }}>
-              <div style={{ minWidth:40 }}>
-                <span className="bebas" style={{ color:"#ff2244", fontSize:"1rem" }}>{s.tier}</span>
-              </div>
-              <div style={{ flex:1 }}>
-                <div style={{ display:"flex", gap:".75rem", alignItems:"baseline", flexWrap:"wrap" }}>
-                  <div className="barlow" style={{ color:"#888", fontWeight:700, fontSize:".85rem" }}>{s.label}</div>
-                  <div className="bebas" style={{ color:"#ff2244", fontSize:"1rem" }}>{s.range}</div>
+          <div style={{display:"grid",gap:".5rem"}}>
+            {data.map((r,i) => (
+              <div key={r.rank} className="fade-up" style={{background:"#111",border:`1px solid ${r.rank<=3?"#ff224420":"#1a1a1a"}`,borderRadius:4,padding:".85rem 1.25rem",display:"flex",alignItems:"center",gap:"1rem",animationDelay:`${i*0.06}s`}}>
+                <div className="rank-badge" style={{background:rankBg[r.rank]?`${rankBg[r.rank]}22`:"#1a1a1a",color:rankBg[r.rank]||"#444",border:`1px solid ${rankBg[r.rank]?rankBg[r.rank]+"44":"#222"}`,fontSize:r.rank<=3?"1.2rem":"1rem",minWidth:"2.2rem"}}>
+                  {rankLabel[r.rank]||`#${r.rank}`}
                 </div>
-                <div style={{ display:"flex", gap:".4rem", flexWrap:"wrap", marginTop:4 }}>
-                  {s.perks.map(p => (
-                    <span key={p} className="barlow" style={{ color:"#555", fontSize:".72rem" }}>· {p}</span>
+                <div className="bebas" style={{flex:1,fontSize:"1.15rem",color:r.rank===1?"#ffd700":r.rank<=3?"#ddd":"#999",letterSpacing:".03em"}}>{r.name}</div>
+                <div style={{display:"flex",gap:"1.5rem",textAlign:"center"}}>
+                  {[["WINS",r.wins,"#ff2244"],["BATTLES",r.battles,"#666"],["WIN RATE",`${r.rate}%`,r.rate>50?"#4ecdc4":"#555"]].map(([l,v,c]) => (
+                    <div key={l}>
+                      <div className="bebas" style={{fontSize:"1.3rem",color:c,lineHeight:1}}>{v}</div>
+                      <div className="barlow" style={{color:"#444",fontSize:".6rem",fontWeight:700,letterSpacing:".1em"}}>{l}</div>
+                    </div>
                   ))}
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-        <div style={{ marginTop:"1.25rem", display:"flex", gap:".75rem", flexWrap:"wrap" }}>
-          <button className="sponsor-cta" style={{ display:"flex", alignItems:"center", gap:".5rem" }}>
-            <Mic size={15}/> BECOME A SPONSOR
-          </button>
-          <a href="mailto:canvaswars@email.com" style={{textDecoration:"none"}}>
-            <button style={{
-              fontFamily:"'Barlow Condensed',sans-serif", fontWeight:700, fontSize:".9rem",
-              padding:".6rem 1.2rem", background:"transparent", border:"1px solid #2a2a2a",
-              color:"#555", borderRadius:2, cursor:"pointer"
-            }}>
-              CONTACT US
-            </button>
-          </a>
-        </div>
-      </div>
-    </div>
-  );
-}
+      );
+    }
 
-// ── ROOT ──────────────────────────────────────────────────────────────────────
-export default function CanvasWars() {
-  const [tab, setTab] = useState("live");
-  const [votes, setVotes] = useState({});
-  const [votedFor, setVotedFor] = useState(null);
+    // ── ARTIST PROFILES ───────────────────────────────────────────────────────
+    function ArtistProfiles() {
+      const [selected, setSelected] = useState(null);
+      return (
+        <div>
+          <SectionHead icon={<IconStar size={22} color="#ff2244"/>} title="ARTIST ROSTER" sub="Canvas Wars 2026 · 6 Selected Competitors"/>
 
-  return (
-    <div style={{ background:"#0d0d0d", minHeight:"100vh", fontFamily:"'Barlow',sans-serif" }}>
-      <style dangerouslySetInnerHTML={{ __html: STYLES }} />
-      <div className="noise-layer" />
-      <div className="scanlines" />
-
-      {/* ── HERO HEADER ─── */}
-      <div style={{
-        background:"linear-gradient(180deg,#111 0%,#0d0d0d 100%)",
-        borderBottom:"1px solid #1e1e1e",
-        padding:"1.5rem clamp(1rem,4vw,3rem)",
-      }}>
-        <div style={{ maxWidth:1300, margin:"0 auto" }}>
-          <div style={{ display:"flex", flexWrap:"wrap", alignItems:"center", justifyContent:"space-between", gap:"1rem" }}>
-            <div>
-              <div style={{ display:"flex", alignItems:"baseline", gap:".75rem" }}>
-                <div className="bebas glow-red" style={{
-                  fontSize:"clamp(3rem,8vw,5.5rem)", lineHeight:.9, letterSpacing:".02em",
-                  color:"#ff2244", textShadow:"0 0 40px #ff224488"
-                }}>
-                  CANVAS
+          {/* Featured */}
+          {(() => {
+            const feat = ARTISTS.find(x=>x.featured);
+            if (!feat) return null;
+            return (
+              <div style={{background:"linear-gradient(135deg,#ffd70008,#1a1408)",border:"1px solid #ffd70030",borderRadius:4,padding:"1.25rem 1.5rem",marginBottom:"1.5rem",display:"flex",flexWrap:"wrap",gap:"1rem",alignItems:"center"}} className="glow-gold">
+                <div style={{display:"flex",alignItems:"center",gap:"1rem"}}>
+                  <div style={{width:64,height:64,borderRadius:4,background:"linear-gradient(135deg,#ffd70033,#ffd70011)",border:"1px solid #ffd70055",display:"flex",alignItems:"center",justifyContent:"center"}}>
+                    <span className="bebas" style={{fontSize:"1.4rem",color:"#ffd700"}}>{feat.avatar}</span>
+                  </div>
+                  <div>
+                    <div className="barlow" style={{color:"#ffd700",fontSize:".65rem",fontWeight:700,letterSpacing:".15em",marginBottom:2}}>★ FEATURED ARTIST · SPONSOR SLOT</div>
+                    <div className="bebas" style={{fontSize:"1.6rem",color:"#fff"}}>{feat.name}</div>
+                    <div className="barlow" style={{color:"#888",fontSize:".8rem"}}>{feat.medium}</div>
+                  </div>
                 </div>
-                <div className="bebas" style={{
-                  fontSize:"clamp(3rem,8vw,5.5rem)", lineHeight:.9, letterSpacing:".02em",
-                  color:"#fff"
-                }}>
-                  WARS
+                <div style={{flex:1,minWidth:200}}>
+                  <div className="barlow" style={{color:"#666",fontSize:".85rem",lineHeight:1.5}}>{feat.bio}</div>
+                </div>
+                <div style={{display:"flex",gap:".6rem",flexWrap:"wrap"}}>
+                  <a href="#" style={{textDecoration:"none"}}><button className="bid-btn" style={{borderColor:"#ffd700",color:"#ffd700"}}>VIEW MERCH TABLE</button></a>
+                  <a href="#" style={{textDecoration:"none"}}><button className="bid-btn" style={{borderColor:"#555",color:"#666"}}>SOCIAL ↗</button></a>
                 </div>
               </div>
-              <div className="barlow" style={{ color:"#555", fontSize:".8rem", letterSpacing:".12em", fontWeight:600, marginTop:".4rem" }}>
-                LIVE ILLUSTRATIVE ART BATTLE · BEAR CREEK PARK · MEDFORD, OR
+            );
+          })()}
+
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(250px,1fr))",gap:"1rem"}}>
+            {ARTISTS.map((a,i) => (
+              <div key={a.id} className="artist-card fade-up" style={{padding:"1.1rem",cursor:"pointer",animationDelay:`${i*0.07}s`,borderColor:selected===i?"#ff224440":"#1f1f1f"}} onClick={()=>setSelected(selected===i?null:i)}>
+                <div style={{display:"flex",gap:".75rem",alignItems:"center",marginBottom:".75rem"}}>
+                  <div style={{width:44,height:44,borderRadius:3,background:`linear-gradient(135deg,${a.color}22,${a.color}08)`,border:`1px solid ${a.color}33`,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+                    <span className="bebas" style={{color:a.color,fontSize:".95rem"}}>{a.avatar}</span>
+                  </div>
+                  <div>
+                    <div className="bebas" style={{color:"#fff",fontSize:"1rem",letterSpacing:".03em"}}>{a.name}</div>
+                    <div className="barlow" style={{color:"#555",fontSize:".72rem"}}>{a.medium}</div>
+                  </div>
+                </div>
+                <div style={{display:"flex",gap:".4rem",flexWrap:"wrap",marginBottom:".75rem"}}>
+                  {a.tags.map(t=>(
+                    <span key={t} className="barlow" style={{fontSize:".65rem",fontWeight:700,letterSpacing:".08em",padding:"2px 7px",background:"#1a1a1a",border:"1px solid #252525",borderRadius:2,color:"#666"}}>{t}</span>
+                  ))}
+                </div>
+                {selected===i && (
+                  <div className="fade-up">
+                    <div className="barlow" style={{color:"#777",fontSize:".8rem",lineHeight:1.55,marginBottom:".75rem"}}>{a.bio}</div>
+                    <div style={{display:"flex",gap:".5rem"}}>
+                      <a href="#" style={{textDecoration:"none"}}><button className="bid-btn" style={{fontSize:".75rem",padding:".3rem .7rem"}}>MERCH TABLE</button></a>
+                      <a href="#" style={{textDecoration:"none"}}><button className="bid-btn" style={{fontSize:".75rem",padding:".3rem .7rem",borderColor:"#333",color:"#555"}}>SOCIAL ↗</button></a>
+                    </div>
+                  </div>
+                )}
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:".6rem"}}>
+                  <div className="barlow" style={{color:"#444",fontSize:".72rem"}}><span style={{color:"#ff2244",fontWeight:700}}>{a.wins}</span> all-time wins</div>
+                  <IconChevron size={14} color={selected===i?"#ff2244":"#333"} style={{transform:selected===i?"rotate(90deg)":"none",transition:"transform .2s"}}/>
+                </div>
               </div>
-            </div>
-            <div style={{ display:"flex", flexDirection:"column", alignItems:"flex-end", gap:".35rem" }}>
-              <div style={{ display:"flex", alignItems:"center", gap:".5rem" }}>
-                <span className="barlow blink" style={{ background:"#ff2244", color:"#fff", fontSize:".65rem", fontWeight:700, letterSpacing:".15em", padding:"2px 8px", borderRadius:2 }}>● LIVE</span>
-                <span className="barlow" style={{ color:"#666", fontSize:".8rem" }}>June 6, 2026 · 11AM–7PM</span>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    // ── SILENT AUCTION ────────────────────────────────────────────────────────
+    function SilentAuction() {
+      const [bids, setBids] = useState(() => {
+        const init = {};
+        AUCTION_ITEMS.forEach(a=>{init[a.id]=a.currentBid;});
+        return init;
+      });
+      const [bidCounts, setBidCounts] = useState(() => {
+        const init = {};
+        AUCTION_ITEMS.forEach(a=>{init[a.id]=a.bids;});
+        return init;
+      });
+      const [lastBid, setLastBid] = useState(null);
+
+      const placeBid = (id) => {
+        setBids(b=>({...b,[id]:b[id]+10}));
+        setBidCounts(c=>({...c,[id]:c[id]+1}));
+        setLastBid(id);
+        setTimeout(()=>setLastBid(null),800);
+      };
+
+      const auctionCd = useCountdown("2026-06-06T22:00:00Z");
+      const liveCd = useCountdown("2026-06-07T01:30:00Z");
+
+      return (
+        <div>
+          <SectionHead icon={<IconGavel size={22} color="#ff2244"/>} title="SILENT AUCTION" sub="Each 24×24 canvas by a competing artist · Revenue split: Artist 70% / Event 30%"/>
+
+          <div style={{display:"flex",flexWrap:"wrap",gap:"1rem",marginBottom:"1.5rem"}}>
+            {[["SILENT AUCTION","11:00 AM – 5:00 PM",auctionCd,"#ff2244"],["LIVE AUCTION","5:00 PM – 6:30 PM",liveCd,"#ffd700"]].map(([label,time,cd,clr])=>(
+              <div key={label} style={{flex:1,minWidth:200,background:"#111",border:`1px solid ${clr}22`,borderRadius:4,padding:"1rem 1.25rem"}}>
+                <div className="barlow" style={{color:"#555",fontSize:".65rem",fontWeight:700,letterSpacing:".12em"}}>{label}</div>
+                <div className="bebas" style={{color:clr,fontSize:"1.1rem",marginTop:2}}>{time}</div>
+                <div style={{display:"flex",gap:".5rem",alignItems:"center",marginTop:6}}>
+                  <IconClock size={11} color="#555"/>
+                  <div className="barlow" style={{color:"#666",fontSize:".75rem"}}>{cd.d}d {cd.h}h {cd.m}m remaining</div>
+                </div>
               </div>
-              <div className="barlow" style={{ color:"#444", fontSize:".75rem" }}>6 Artists · 24×24 Canvas · Timed Battle</div>
-              <div style={{ display:"flex", gap:".4rem" }}>
-                <span className="bebas" style={{ background:"#ff224415", border:"1px solid #ff224430", color:"#ff2244", fontSize:".8rem", letterSpacing:".08em", padding:"2px 10px", borderRadius:2 }}>1ST · $300</span>
-                <span className="bebas" style={{ background:"#1a1a1a", border:"1px solid #222", color:"#888", fontSize:".8rem", letterSpacing:".08em", padding:"2px 10px", borderRadius:2 }}>2ND · $150</span>
-                <span className="bebas" style={{ background:"#1a1a1a", border:"1px solid #222", color:"#666", fontSize:".8rem", letterSpacing:".08em", padding:"2px 10px", borderRadius:2 }}>3RD · $75</span>
+            ))}
+            <div style={{flex:1,minWidth:200,background:"#111",border:"1px solid #1e1e1e",borderRadius:4,padding:"1rem 1.25rem",display:"flex",flexDirection:"column",justifyContent:"center"}}>
+              <div className="barlow" style={{color:"#555",fontSize:".65rem",fontWeight:700,letterSpacing:".12em"}}>REVENUE SPLIT</div>
+              <div style={{display:"flex",gap:".75rem",marginTop:6,alignItems:"center"}}>
+                <div className="bebas" style={{fontSize:"2rem",color:"#4ecdc4",lineHeight:1}}>70%</div>
+                <div className="barlow" style={{color:"#666",fontSize:".75rem",lineHeight:1.3}}>TO ARTIST</div>
+                <div className="bebas" style={{fontSize:"1.2rem",color:"#333",lineHeight:1}}>+</div>
+                <div className="bebas" style={{fontSize:"2rem",color:"#ff2244",lineHeight:1}}>30%</div>
+                <div className="barlow" style={{color:"#666",fontSize:".75rem",lineHeight:1.3}}>TO EVENT</div>
               </div>
             </div>
           </div>
+
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))",gap:"1rem"}}>
+            {AUCTION_ITEMS.map((item,i)=>{
+              const isFlash = lastBid===item.id;
+              const artistColor = ARTISTS.find(a=>a.name===item.artist)?.color||"#ff2244";
+              const artistAvatar = ARTISTS.find(a=>a.name===item.artist)?.avatar||"??";
+              return (
+                <div key={item.id} className="artist-card fade-up" style={{padding:"1.2rem",animationDelay:`${i*0.07}s`,borderColor:isFlash?"#ff224466":"#1f1f1f",transition:"border-color .3s"}}>
+                  <div style={{height:130,background:"#0a0a0a",border:"1px solid #1a1a1a",borderRadius:3,marginBottom:"1rem",display:"flex",alignItems:"center",justifyContent:"center",position:"relative",overflow:"hidden"}}>
+                    <div style={{position:"absolute",inset:0,background:`linear-gradient(135deg,${artistColor}11,transparent)`}}/>
+                    <div style={{textAlign:"center",position:"relative",zIndex:1}}>
+                      <div className="bebas" style={{color:"#222",fontSize:"2.5rem",letterSpacing:".05em"}}>{artistAvatar}</div>
+                      <div className="barlow" style={{color:"#333",fontSize:".65rem",letterSpacing:".1em"}}>24" × 24" CANVAS</div>
+                    </div>
+                  </div>
+                  <div className="bebas" style={{color:"#fff",fontSize:"1.2rem",letterSpacing:".03em",marginBottom:2}}>{item.title}</div>
+                  <div className="barlow" style={{color:"#555",fontSize:".75rem",marginBottom:"1rem"}}>by {item.artist}</div>
+                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-end",marginBottom:".75rem"}}>
+                    <div>
+                      <div className="barlow" style={{color:"#444",fontSize:".65rem",fontWeight:700,letterSpacing:".1em"}}>CURRENT BID</div>
+                      <div className="bebas" style={{fontSize:"1.8rem",lineHeight:1,color:isFlash?"#4ecdc4":"#ff2244",transition:"color .3s",textShadow:isFlash?"0 0 20px #4ecdc4":"none"}}>${bids[item.id]}</div>
+                    </div>
+                    <div style={{textAlign:"right"}}>
+                      <div className="barlow" style={{color:"#444",fontSize:".65rem",fontWeight:700,letterSpacing:".1em"}}>BIDS</div>
+                      <div className="bebas" style={{fontSize:"1.4rem",color:"#666"}}>{bidCounts[item.id]}</div>
+                    </div>
+                  </div>
+                  <button className="bid-btn" style={{width:"100%",padding:".5rem",fontSize:".9rem"}} onClick={()=>placeBid(item.id)}>
+                    {isFlash?"✓ BID PLACED!":`BID $${bids[item.id]+10} →`}
+                  </button>
+                </div>
+              );
+            })}
+          </div>
         </div>
-      </div>
+      );
+    }
 
-      {/* ── TABS ─── */}
-      <div style={{
-        borderBottom:"1px solid #1e1e1e",
-        background:"#0d0d0d",
-        position:"sticky", top:0, zIndex:100,
-        backdropFilter:"blur(8px)"
-      }}>
-        <div style={{ maxWidth:1300, margin:"0 auto", padding:"0 clamp(.5rem,3vw,2rem)", display:"flex", overflowX:"auto" }}>
-          {TABS.map(t => (
-            <button key={t.id} className={`tab-btn ${tab===t.id?"tab-active":""}`} onClick={() => setTab(t.id)}>
-              {t.label}
-            </button>
-          ))}
+    // ── SPONSORS ──────────────────────────────────────────────────────────────
+    function Sponsors() {
+      return (
+        <div>
+          <SectionHead icon={<IconDollar size={22} color="#ff2244"/>} title="SPONSORSHIP" sub="Canvas Wars 2026 · Bear Creek Park · Medford, OR · June 6"/>
+
+          <div style={{marginBottom:"1.5rem"}}>
+            <div className="barlow" style={{color:"#555",fontSize:".65rem",fontWeight:700,letterSpacing:".2em",marginBottom:".75rem"}}>TIER 1 · TITLE SPONSOR · $300–$500</div>
+            <div className="sponsor-t1 glow-red" style={{borderRadius:4,padding:"2rem",textAlign:"center"}}>
+              <div className="barlow" style={{color:"#555",fontSize:".7rem",fontWeight:700,letterSpacing:".15em"}}>CANVAS WARS 2026 PRESENTED BY</div>
+              <div className="bebas" style={{fontSize:"clamp(1.6rem,4vw,3rem)",color:"#ff224466",letterSpacing:".08em",marginTop:".3rem"}}>[ YOUR BRAND HERE ]</div>
+              <div className="barlow" style={{color:"#444",fontSize:".8rem",marginTop:".5rem"}}>Full logo placement · Stage banner · MC intro · Social media tags · Sponsor table</div>
+              <div style={{marginTop:"1.25rem"}}>
+                <button className="sponsor-cta">BECOME TITLE SPONSOR →</button>
+              </div>
+            </div>
+          </div>
+
+          <div style={{marginBottom:"1.5rem"}}>
+            <div className="barlow" style={{color:"#555",fontSize:".65rem",fontWeight:700,letterSpacing:".2em",marginBottom:".75rem"}}>TIER 2 · SUPPORTING SPONSORS · $150–$300</div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(240px,1fr))",gap:"1rem"}}>
+              {[1,2].map(n=>(
+                <div key={n} className="sponsor-t2" style={{borderRadius:4,padding:"1.25rem",textAlign:"center"}}>
+                  <div className="bebas" style={{color:"#333",fontSize:"1.6rem",letterSpacing:".05em"}}>SUPPORTING SPONSOR</div>
+                  <div className="barlow" style={{color:"#333",fontSize:".75rem",marginTop:4}}>Logo · MC shoutout · Program listing</div>
+                  <div style={{marginTop:"1rem"}}><button className="sponsor-cta" style={{fontSize:".8rem",padding:".4rem 1rem"}}>CLAIM SLOT</button></div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div style={{marginBottom:"2rem"}}>
+            <div className="barlow" style={{color:"#555",fontSize:".65rem",fontWeight:700,letterSpacing:".2em",marginBottom:".75rem"}}>TIER 3 · IN-KIND / COMMUNITY · PRODUCT GIFTS OR CONTRIBUTIONS</div>
+            <div style={{display:"flex",flexWrap:"wrap",gap:".5rem"}}>
+              {["IN-KIND PARTNER","IN-KIND PARTNER","COMMUNITY BACKER","COMMUNITY BACKER","ART SUPPLIER","LOCAL BUSINESS"].map((l,i)=>(
+                <div key={i} className="sponsor-t3" style={{borderRadius:3,padding:".5rem 1rem",display:"flex",alignItems:"center",gap:".4rem"}}>
+                  <IconTag size={11} color="#444"/>
+                  <span className="barlow" style={{color:"#444",fontSize:".75rem",fontWeight:600}}>{l}</span>
+                </div>
+              ))}
+              <div style={{background:"#111",border:"1px dashed #2a2a2a",borderRadius:3,padding:".5rem 1rem",cursor:"pointer"}}>
+                <span className="barlow" style={{color:"#ff224455",fontSize:".75rem",fontWeight:600}}>+ ADD YOUR BRAND</span>
+              </div>
+            </div>
+          </div>
+
+          <div style={{background:"#111",border:"1px solid #1e1e1e",borderRadius:4,padding:"1.25rem 1.5rem"}}>
+            <div className="bebas" style={{color:"#888",fontSize:"1.1rem",letterSpacing:".05em",marginBottom:"1rem"}}>SPONSORSHIP TIERS</div>
+            <div style={{display:"grid",gap:".5rem"}}>
+              {[
+                {tier:"T1",label:"Title Sponsor",range:"$300–$500",perks:["Presented By naming rights","Stage banner placement","MC intro shoutout","Social media mentions","Sponsor table at event"]},
+                {tier:"T2",label:"Supporting Sponsor",range:"$150–$300",perks:["Logo on event materials","MC shoutout","Program listing","Social tag"]},
+                {tier:"T3",label:"In-Kind / Community",range:"Product / Gift",perks:["Badge acknowledgment","Program mention","Community recognition"]},
+              ].map(s=>(
+                <div key={s.tier} style={{display:"flex",gap:"1rem",padding:".75rem",background:"#0f0f0f",borderRadius:3,flexWrap:"wrap",alignItems:"flex-start"}}>
+                  <div style={{minWidth:40}}><span className="bebas" style={{color:"#ff2244",fontSize:"1rem"}}>{s.tier}</span></div>
+                  <div style={{flex:1}}>
+                    <div style={{display:"flex",gap:".75rem",alignItems:"baseline",flexWrap:"wrap"}}>
+                      <div className="barlow" style={{color:"#888",fontWeight:700,fontSize:".85rem"}}>{s.label}</div>
+                      <div className="bebas" style={{color:"#ff2244",fontSize:"1rem"}}>{s.range}</div>
+                    </div>
+                    <div style={{display:"flex",gap:".4rem",flexWrap:"wrap",marginTop:4}}>
+                      {s.perks.map(p=>(<span key={p} className="barlow" style={{color:"#555",fontSize:".72rem"}}>· {p}</span>))}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div style={{marginTop:"1.25rem",display:"flex",gap:".75rem",flexWrap:"wrap"}}>
+              <button className="sponsor-cta" style={{display:"flex",alignItems:"center",gap:".5rem"}}>
+                <IconMic size={15}/> BECOME A SPONSOR
+              </button>
+              <a href="mailto:canvaswars@email.com" style={{textDecoration:"none"}}>
+                <button style={{fontFamily:"'Barlow Condensed',sans-serif",fontWeight:700,fontSize:".9rem",padding:".6rem 1.2rem",background:"transparent",border:"1px solid #2a2a2a",color:"#555",borderRadius:2,cursor:"pointer"}}>
+                  CONTACT US
+                </button>
+              </a>
+            </div>
+          </div>
         </div>
-      </div>
+      );
+    }
 
-      {/* ── MAIN ─── */}
-      <div style={{ maxWidth:1300, margin:"0 auto", padding:"2rem clamp(1rem,4vw,3rem) 4rem" }}>
-        {tab === "live"     && <LiveBattle votes={votes} setVotes={setVotes} votedFor={votedFor} setVotedFor={setVotedFor} />}
-        {tab === "weekly"   && <WeeklyBattles />}
-        {tab === "leaders"  && <Leaderboard />}
-        {tab === "artists"  && <ArtistProfiles />}
-        {tab === "auction"  && <SilentAuction />}
-        {tab === "sponsors" && <Sponsors />}
-      </div>
+    // ── ROOT ──────────────────────────────────────────────────────────────────
+    function CanvasWars() {
+      const [tab, setTab] = useState("live");
+      const [votes, setVotes] = useState({});
+      const [votedFor, setVotedFor] = useState(null);
 
-      {/* ── FOOTER ─── */}
-      <div style={{ borderTop:"1px solid #1a1a1a", padding:"1.25rem clamp(1rem,4vw,3rem)", display:"flex", flexWrap:"wrap", justifyContent:"space-between", alignItems:"center", gap:".75rem" }}>
-        <div className="bebas" style={{ color:"#333", fontSize:"1rem", letterSpacing:".1em" }}>CANVAS WARS · MEDFORD, OR · 2026</div>
-        <div className="barlow" style={{ color:"#2a2a2a", fontSize:".75rem" }}>No oils · No aerosols · No hazardous materials · Media release required · Artist entry $40 · Vendor fee $40</div>
-      </div>
-    </div>
-  );
-}
+      return (
+        <div style={{background:"#0d0d0d",minHeight:"100vh"}}>
+          <div className="noise-layer"/>
+          <div className="scanlines"/>
+
+          {/* HERO */}
+          <div style={{background:"linear-gradient(180deg,#111 0%,#0d0d0d 100%)",borderBottom:"1px solid #1e1e1e",padding:"1.5rem clamp(1rem,4vw,3rem)"}}>
+            <div style={{maxWidth:1300,margin:"0 auto"}}>
+              <div style={{display:"flex",flexWrap:"wrap",alignItems:"center",justifyContent:"space-between",gap:"1rem"}}>
+                <div>
+                  <div style={{display:"flex",alignItems:"baseline",gap:".75rem"}}>
+                    <div className="bebas glow-red" style={{fontSize:"clamp(2.5rem,7vw,5rem)",lineHeight:.9,letterSpacing:".02em",color:"#ff2244",textShadow:"0 0 40px #ff224488"}}>CANVAS</div>
+                    <div className="bebas" style={{fontSize:"clamp(2.5rem,7vw,5rem)",lineHeight:.9,letterSpacing:".02em",color:"#fff"}}>WARS</div>
+                  </div>
+                  <div className="barlow" style={{color:"#555",fontSize:".8rem",letterSpacing:".12em",fontWeight:600,marginTop:".4rem"}}>LIVE ILLUSTRATIVE ART BATTLE · BEAR CREEK PARK · MEDFORD, OR</div>
+                </div>
+                <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:".35rem"}}>
+                  <div style={{display:"flex",alignItems:"center",gap:".5rem"}}>
+                    <span className="barlow blink" style={{background:"#ff2244",color:"#fff",fontSize:".65rem",fontWeight:700,letterSpacing:".15em",padding:"2px 8px",borderRadius:2}}>● LIVE</span>
+                    <span className="barlow" style={{color:"#666",fontSize:".8rem"}}>June 6, 2026 · 11AM–7PM</span>
+                  </div>
+                  <div className="barlow" style={{color:"#444",fontSize:".75rem"}}>6 Artists · 24×24 Canvas · Timed Battle</div>
+                  <div style={{display:"flex",gap:".4rem"}}>
+                    {[["1ST · $300","#ff224415","#ff224430","#ff2244"],["2ND · $150","#1a1a1a","#222","#888"],["3RD · $75","#1a1a1a","#222","#666"]].map(([l,bg,border,color])=>(
+                      <span key={l} className="bebas" style={{background:bg,border:`1px solid ${border}`,color,fontSize:".8rem",letterSpacing:".08em",padding:"2px 10px",borderRadius:2}}>{l}</span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* TABS */}
+          <div style={{borderBottom:"1px solid #1e1e1e",background:"#0d0d0d",position:"sticky",top:0,zIndex:100}}>
+            <div style={{maxWidth:1300,margin:"0 auto",padding:"0 clamp(.5rem,3vw,2rem)",display:"flex",overflowX:"auto"}}>
+              {TABS.map(t=>(
+                <button key={t.id} className={`tab-btn ${tab===t.id?"tab-active":""}`} onClick={()=>setTab(t.id)}>{t.label}</button>
+              ))}
+            </div>
+          </div>
+
+          {/* MAIN */}
+          <div style={{maxWidth:1300,margin:"0 auto",padding:"2rem clamp(1rem,4vw,3rem) 4rem"}}>
+            {tab==="live"     && <LiveBattle votes={votes} setVotes={setVotes} votedFor={votedFor} setVotedFor={setVotedFor}/>}
+            {tab==="weekly"   && <WeeklyBattles/>}
+            {tab==="leaders"  && <Leaderboard/>}
+            {tab==="artists"  && <ArtistProfiles/>}
+            {tab==="auction"  && <SilentAuction/>}
+            {tab==="sponsors" && <Sponsors/>}
+          </div>
+
+          {/* FOOTER */}
+          <div style={{borderTop:"1px solid #1a1a1a",padding:"1.25rem clamp(1rem,4vw,3rem)",display:"flex",flexWrap:"wrap",justifyContent:"space-between",alignItems:"center",gap:".75rem"}}>
+            <div className="bebas" style={{color:"#333",fontSize:"1rem",letterSpacing:".1em"}}>CANVAS WARS · MEDFORD, OR · 2026</div>
+            <div className="barlow" style={{color:"#2a2a2a",fontSize:".75rem"}}>No oils · No aerosols · No hazardous materials · Media release required · Artist entry $40 · Vendor fee $40</div>
+          </div>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById("root"));
+    root.render(<CanvasWars/>);
+  </script>
+</body>
+</html>
