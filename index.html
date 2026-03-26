@@ -698,9 +698,15 @@
   return (
     <div style={{background:"#0d0d0d", minHeight:"100vh"}}>
       <div className="noise-layer"/>
-  };
-  const calculateTotal = () => {
-    return Object.values(votes).reduce((a, b) => a + Number(b), 0);
+      {/* ... the rest of your app content goes here ... */}
+
+      {/* MAKE SURE THIS IS AT THE VERY END OF YOUR APP CONTENT */}
+    </div>
+  ); 
+} 
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(<CanvasWars/>);
   };
       return (
         <div style={{background:"#0d0d0d",minHeight:"100vh"}}>
