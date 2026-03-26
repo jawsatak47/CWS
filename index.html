@@ -674,102 +674,92 @@
     }
 
     // ── ROOT ──────────────────────────────────────────────────────────────────
-  // --- 1. LOGIC SECTION ---
-  const [isJudge, setIsJudge] = React.useState(false);
-  const [pass, setPass] = React.useState("");
-  const [votes, setVotes] = React.useState({}); 
+    function CanvasWars() {
+      const [tab, setTab] = useState("live");
+      const [votes, setVotes] = useState({});
+      const [votedFor, setVotedFor] = useState(null);
 
-  const handleLogin = () => {
-    if (pass === "CW2026") { 
-      setIsJudge(true);
-    } else {
-      alert("Wrong Password!");
-    }
-  };
+      return (
+        <div style={{background:"#0d0d0d",minHeight:"100vh"}}>
+          <div className="noise-layer"/>
+          <div className="scanlines"/>
 
-  const updateVote = (artistName, score) => {
-    setVotes(prev => ({ ...prev, [artistName]: score }));
-  };
-
-  const calculateTotal = () => {
-    return Object.values(votes).reduce((a, b) => a + Number(b), 0);
-  };
-
-  // --- 2. THE VIEW SECTION ---
-  return (
-    <div style={{background:"#0d0d0d", minHeight:"100vh", position: "relative"}}>
-      <div className="noise-layer"/>
-      <div className="scanlines"/>
-
-      {/* HERO SECTION */}
-      <div style={{background:"linear-gradient(180deg,#111 0%,#0d0d0d 100%)", borderBottom:"1px solid #1e1e1e", padding:"1.5rem clamp(1rem,4vw,3rem)"}}>
-        <div style={{maxWidth:1300, margin:"0 auto"}}>
-          <div style={{display:"flex", flexWrap:"wrap", alignItems:"center", justifyContent:"space-between", gap:"1rem"}}>
-            <div>
-              <div style={{display:"flex", alignItems:"baseline", gap:".75rem"}}>
-                <div className="bebas glow-red" style={{fontSize:"clamp(2.5rem,7vw,5rem)", lineHeight:.9, letterSpacing:".02em", color:"#ff2244", textShadow:"0 0 40px #ff224488"}}>CANVAS</div>
-                <div className="bebas" style={{fontSize:"clamp(2.5rem,7vw,5rem)", lineHeight:.9, letterSpacing:".02em", color:"#fff"}}>WARS</div>
+          {/* HERO */}
+          <div style={{background:"linear-gradient(180deg,#111 0%,#0d0d0d 100%)",borderBottom:"1px solid #1e1e1e",padding:"1.5rem clamp(1rem,4vw,3rem)"}}>
+            <div style={{maxWidth:1300,margin:"0 auto"}}>
+              <div style={{display:"flex",flexWrap:"wrap",alignItems:"center",justifyContent:"space-between",gap:"1rem"}}>
+                <div>
+                  <div style={{display:"flex",alignItems:"baseline",gap:".75rem"}}>
+                    <div className="bebas glow-red" style={{fontSize:"clamp(2.5rem,7vw,5rem)",lineHeight:.9,letterSpacing:".02em",color:"#ff2244",textShadow:"0 0 40px #ff224488"}}>CANVAS</div>
+                    <div className="bebas" style={{fontSize:"clamp(2.5rem,7vw,5rem)",lineHeight:.9,letterSpacing:".02em",color:"#fff"}}>WARS</div>
+                  </div>
+                  <div className="barlow" style={{color:"#555",fontSize:".8rem",letterSpacing:".12em",fontWeight:600,marginTop:".4rem"}}>LIVE ILLUSTRATIVE ART BATTLE · BEAR CREEK PARK · MEDFORD, OR</div>
+                </div>
+                <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:".35rem"}}>
+                  <div style={{display:"flex",alignItems:"center",gap:".5rem"}}>
+                    <span className="barlow blink" style={{background:"#ff2244",color:"#fff",fontSize:".65rem",fontWeight:700,letterSpacing:".15em",padding:"2px 8px",borderRadius:2}}>● LIVE</span>
+                    <span className="barlow" style={{color:"#666",fontSize:".8rem"}}>June 6, 2026 · 11AM–7PM</span>
+                  </div>
+                  <div className="barlow" style={{color:"#444",fontSize:".75rem"}}>6 Artists · 24×24 Canvas · Timed Battle</div>
+                  <div style={{display:"flex",gap:".4rem"}}>
+                    {[["1ST · $300","#ff224415","#ff224430","#ff2244"],["2ND · $150","#1a1a1a","#222","#888"],["3RD · $75","#1a1a1a","#222","#666"]].map(([l,bg,border,color])=>(
+                      <span key={l} className="bebas" style={{background:bg,border:`1px solid ${border}`,color,fontSize:".8rem",letterSpacing:".08em",padding:"2px 10px",borderRadius:2}}>{l}</span>
+                    ))}
+                  </div>
+                </div>
               </div>
-              <div className="barlow" style={{color:"#555", fontSize:".8rem", letterSpacing:".12em", fontWeight:600, marginTop:".4rem"}}>LIVE ILLUSTRATIVE ART BATTLE · BEAR CREEK PARK · MEDFORD, OR</div>
             </div>
-            <div style={{display:"flex", flexDirection:"column", alignItems:"flex-end", gap:".35rem"}}>
-              <div style={{display:"flex", alignItems:"center", gap:".5rem"}}>
-                <span className="barlow blink" style={{background:"#ff2244", color:"#fff", fontSize:".65rem", fontWeight:700, letterSpacing:".15em", padding:"2px 8px", borderRadius:2}}>● LIVE</span>
-                <span className="barlow" style={{color:"#666", fontSize:".8rem"}}>June 6, 2026 · 11AM–7PM</span>
-              </div>
-              <div className="barlow" style={{color:"#444", fontSize:".75rem"}}>6 Artists · 24×24 Canvas · Timed Battle</div>
-              <div style={{display:"flex", gap:".4rem"}}>
-                {[["1ST · $300","#ff224415","#ff224430","#ff2244"],["2ND · $150","#1a1a1a","#222","#888"],["3RD · $75","#1a1a1a","#222","#666"]].map(([l,bg,border,color])=>(
-                  <span key={l} className="bebas" style={{background:bg, border:`1px solid ${border}`, color, fontSize:".8rem", letterSpacing:".08em", padding:"2px 10px", borderRadius:2}}>{l}</span>
-                ))}
-              </div>
+          </div>
+
+          {/* TABS */}
+          <div style={{borderBottom:"1px solid #1e1e1e",background:"#0d0d0d",position:"sticky",top:0,zIndex:100}}>
+            <div style={{maxWidth:1300,margin:"0 auto",padding:"0 clamp(.5rem,3vw,2rem)",display:"flex",overflowX:"auto"}}>
+              {TABS.map(t=>(
+                <button key={t.id} className={`tab-btn ${tab===t.id?"tab-active":""}`} onClick={()=>setTab(t.id)}>{t.label}</button>
+              ))}
+            </div>
+          </div>
+
+          {/* MAIN */}
+          <div style={{maxWidth:1300,margin:"0 auto",padding:"2rem clamp(1rem,4vw,3rem) 4rem"}}>
+            {tab==="live"     && <LiveBattle votes={votes} setVotes={setVotes} votedFor={votedFor} setVotedFor={setVotedFor}/>}
+            {tab==="weekly"   && <WeeklyBattles/>}
+            {tab==="leaders"  && <Leaderboard/>}
+            {tab==="artists"  && <ArtistProfiles/>}
+            {tab==="auction"  && <SilentAuction/>}
+            {tab==="sponsors" && <Sponsors/>}
+          </div>
+    
+
+        {/* FOOTER */}
+          <div style={{borderTop:"1px solid #1a1a1a", padding:"1.25rem clamp(1rem,4vw,3rem)", display:"flex", flexWrap:"wrap", justifyContent:"space-between", alignItems:"center", gap:".75rem"}}>
+            <div className="bebas" style={{color:"#333", fontSize:"1rem", letterSpacing:".1em"}}>CANVAS WARS · MEDFORD, OR · 2026</div>
+            <div className="barlow" style={{color:"#2a2a2a", fontSize:".75rem"}}>No oils · No aerosols · No hazardous materials · Media release required · Artist entry $40 · Vendor fee $40</div>
+          </div>
+
+          {/* REGISTRATION & PAYMENTS SECTION */}
+          <div className="container" style={{padding: "20px"}}> 
+            <h3 style={{ fontFamily: 'Bebas Neue', color: 'var(--red)', marginTop: 0 }}>
+              💳 REGISTRATION & PAYMENTS
+            </h3>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
+              <a href="https://square.link/u/8pB8RjJW" className="btn-main" style={{ fontSize: '14px', textAlign: 'center', textDecoration: 'none', display: 'block' }}>
+                ARTIST ENTRY ($40)
+              </a>
+              <a href="https://square.link/u/o0uEAH8Z" className="btn-main" style={{ fontSize: '14px', background: 'var(--ora)', textAlign: 'center', textDecoration: 'none', display: 'block' }}>
+                VENDOR FEE ($40)
+              </a>
+              <a href="https://square.link/u/TwnqfEPI" className="btn-main" style={{ fontSize: '14px', background: 'var(--blu)', textAlign: 'center', textDecoration: 'none', display: 'block' }}>
+                SPONSOR TIER ($300+)
+              </a>
             </div>
           </div>
         </div>
-      </div>
+      );
+    }
 
-      {/* --- JUDGE DASHBOARD --- */}
-      <div style={{ padding: "2rem", background: "#111", borderTop: "2px solid #ff2244", color: "white", marginTop: "40px", position: "relative", zIndex: 10 }}>
-        {!isJudge ? (
-          <div style={{ textAlign: 'center' }}>
-            <h3 className="bebas">JUDGE ACCESS</h3>
-            <input 
-              type="password" 
-              placeholder="Enter Secret Code" 
-              onChange={(e) => setPass(e.target.value)}
-              style={{ padding: "10px", color: "#000", borderRadius: "4px", border: "none" }}
-            />
-            <button onClick={handleLogin} className="btn-main" style={{ marginLeft: "10px", padding: "10px 20px", cursor: "pointer" }}>LOGIN</button>
-          </div>
-        ) : (
-          <div style={{ maxWidth: "600px", margin: "0 auto" }}>
-            <h3 className="bebas" style={{ color: "#ff2244" }}>JUDGE DASHBOARD</h3>
-            {["Artist 1", "Artist 2", "Artist 3", "Artist 4", "Artist 5", "Artist 6"].map(artist => (
-              <div key={artist} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px', background: '#222', padding: '10px' }}>
-                <span className="bebas">{artist}</span>
-                <input 
-                  type="number" 
-                  min="0" max="10"
-                  onChange={(e) => updateVote(artist, e.target.value)} 
-                  style={{color: "#000", width: "60px", padding: "5px"}} 
-                />
-              </div>
-            ))}
-            <h4 className="bebas" style={{fontSize: "2rem", marginTop: "20px"}}>TOTAL: {calculateTotal()}</h4>
-            <button onClick={() => setIsJudge(false)} style={{ color: "#666", background: "none", border: "none", cursor: "pointer" }}>Logout</button>
-          </div>
-        )}
-      </div>
-
-      {/* FOOTER */}
-      <div style={{borderTop:"1px solid #1a1a1a", padding:"1.25rem clamp(1rem,4vw,3rem)", display:"flex", flexWrap:"wrap", justifyContent:"space-between", alignItems:"center", gap:".75rem", position: "relative", zIndex: 5}}>
-        <div className="bebas" style={{color:"#333", fontSize:"1rem", letterSpacing:".1em"}}>CANVAS WARS · MEDFORD, OR · 2026</div>
-        <div className="barlow" style={{color:"#2a2a2a", fontSize:".75rem"}}>No oils · No aerosols · Artist entry $40</div>
-      </div>
-
-    </div>
-  ); 
-} 
-
-const root = ReactDOM.createRoot(document.getElementById("root"));
-root.render(<CanvasWars/>);
+    const root = ReactDOM.createRoot(document.getElementById("root"));
+    root.render(<CanvasWars/>);
+  </script>
+</body>
+</html>
