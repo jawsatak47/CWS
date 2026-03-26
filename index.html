@@ -674,12 +674,13 @@
     }
 
     // ── ROOT ──────────────────────────────────────────────────────────────────
-    function CanvasWars() const [isJudge, setIsJudge] = React.useState(false);
+    function CanvasWars() {
+  const [isJudge, setIsJudge] = React.useState(false);
   const [pass, setPass] = React.useState("");
-  const [votes, setVotes] = React.useState({}); // Stores artist names and scores
+  const [votes, setVotes] = React.useState({}); 
 
   const handleLogin = () => {
-    if (pass === "CW2026") { // Change "CW2026" to whatever secret password you want
+    if (pass === "CW2026") { 
       setIsJudge(true);
     } else {
       alert("Wrong Password!");
@@ -690,6 +691,9 @@
     setVotes(prev => ({ ...prev, [artistName]: score }));
   };
 
+  const calculateTotal = () => {
+    return Object.values(votes).reduce((a, b) => a + Number(b), 0);
+  };
   const calculateTotal = () => {
     return Object.values(votes).reduce((a, b) => a + Number(b), 0);
   };
