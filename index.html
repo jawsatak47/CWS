@@ -140,18 +140,18 @@
     };
 
     const WEEKLY_BATTLES = [
-      {id:1,theme:"???",           revealed:false,status:"LIVE",    hoursLeft:2, minsLeft:44,entry:5, participants:12,max:20,prize:"$60 + Feature Slot"},
+      {id:1,theme:"???",           revealed:false,status:"LIVE",    hoursLeft:2, minsLeft:44,entry:5, participants:12,max:20,prize:"$50 + Feature Slot"},
       {id:2,theme:"URBAN DECAY",   revealed:true, status:"UPCOMING",daysLeft:3,  hoursLeft:14,entry:8, participants:0, max:16,prize:"$100 + Merch"},
-      {id:3,theme:"NEON WILDERNESS",revealed:true,status:"UPCOMING",daysLeft:7,  hoursLeft:0, entry:10,participants:0, max:16,prize:"$150 + Profile Boost"},
+      {id:3,theme:"NEON WILDERNESS",revealed:true,status:"UPCOMING",daysLeft:7,  hoursLeft:0, entry:10,participants:0, max:16,prize:"$tbd"},
     ];
 
     const AUCTION_ITEMS = [
-      {id:1,title:"FRACTURE POINT",   artist:"MIRA SOLANO",    currentBid:180,bids:5, startBid:100},
-      {id:2,title:"TIDE MARKERS",     artist:"DEVIN WATTS",    currentBid:240,bids:8, startBid:150},
-      {id:3,title:"CARBON ECHO",      artist:"TAMARA CROSS",   currentBid:120,bids:3, startBid:80},
-      {id:4,title:"GILT SIEGE",       artist:"KENJI OKAFOR",   currentBid:450,bids:12,startBid:200},
-      {id:5,title:"BLUE LINE THEORY", artist:"SELENE PARK",    currentBid:160,bids:6, startBid:100},
-      {id:6,title:"VAGRANT SIGNAL",   artist:"ROOK VALENTINE", currentBid:95, bids:2, startBid:75},
+      {id:1,title:"FRACTURE POINT",   artist:"TBD",    currentBid:0,bids:0, startBid:100},
+      {id:2,title:"TIDE MARKERS",     artist:"TBD",    currentBid:0,bids:0, startBid:100},
+      {id:3,title:"CARBON ECHO",      artist:"TBD",   currentBid:0,bids:0, startBid:100},
+      {id:4,title:"GILT SIEGE",       artist:"TBD",   currentBid:0,bids:0,startBid:100},
+      {id:5,title:"BLUE LINE THEORY", artist:"TBD",    currentBid:0,bids:0, startBid:100},
+      {id:6,title:"VAGRANT SIGNAL",   artist:"TBD", currentBid:0, bids:0, startBid:100},
     ];
 
     const TABS = [
@@ -247,7 +247,7 @@
           <div style={{background:"linear-gradient(90deg,#ff224415,#ff224405,transparent)",border:"1px solid #ff224430",borderRadius:4,padding:"1rem 1.5rem",marginBottom:"2rem",display:"flex",flexWrap:"wrap",gap:"1rem",alignItems:"center",justifyContent:"space-between"}}>
             <div>
               <div className="bebas" style={{color:"#ff2244",fontSize:".85rem",letterSpacing:".15em"}}>● LIVE NOW — CANVAS WARS 2026</div>
-              <div className="bebas" style={{color:"#fff",fontSize:"clamp(1rem,2.5vw,1.5rem)",letterSpacing:".03em"}}>BEAR CREEK PARK · MEDFORD, OR · JUNE 6</div>
+              <div className="bebas" style={{color:"#fff",fontSize:"clamp(1rem,2.5vw,1.5rem)",letterSpacing:".03em"}}>Timeless Treasures Hub · MEDFORD, OR · JUNE 6</div>
             </div>
             <div>
               <div className="barlow" style={{color:"#555",fontSize:".7rem",letterSpacing:".1em",fontWeight:700,textAlign:"center"}}>BRUSHES DOWN IN</div>
@@ -324,7 +324,7 @@
             {[
               ["CANVAS SIZE","24\" × 24\" Primed Canvas / Birch Panel"],
               ["MEDIUMS","Pencil · Charcoal · Ballpoint · Marker · Watercolor · Acrylic · Gold Leaf"],
-              ["PRIZES","1st $300 · 2nd $150 · 3rd $75 / Sponsor Gift"],
+              ["PRIZES","1st $300 · 2nd $150 · 3rd $50"],
               ["VENDOR SPACES","Up to 15 · $40/space · Own setup required"],
             ].map(([k,v]) => (
               <div key={k}>
