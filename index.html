@@ -674,11 +674,25 @@
     }
 
     // ── ROOT ──────────────────────────────────────────────────────────────────
-    function CanvasWars() {
-      const [tab, setTab] = useState("live");
-      const [votes, setVotes] = useState({});
-      const [votedFor, setVotedFor] = useState(null);
+    function CanvasWars() const [isJudge, setIsJudge] = React.useState(false);
+  const [pass, setPass] = React.useState("");
+  const [votes, setVotes] = React.useState({}); // Stores artist names and scores
 
+  const handleLogin = () => {
+    if (pass === "CW2026") { // Change "CW2026" to whatever secret password you want
+      setIsJudge(true);
+    } else {
+      alert("Wrong Password!");
+    }
+  };
+
+  const updateVote = (artistName, score) => {
+    setVotes(prev => ({ ...prev, [artistName]: score }));
+  };
+
+  const calculateTotal = () => {
+    return Object.values(votes).reduce((a, b) => a + Number(b), 0);
+  };
       return (
         <div style={{background:"#0d0d0d",minHeight:"100vh"}}>
           <div className="noise-layer"/>
@@ -729,7 +743,43 @@
             {tab==="auction"  && <SilentAuction/>}
             {tab==="sponsors" && <Sponsors/>}
           </div>
-    
+  <div style={{ padding: "2rem", background: "#111", borderTop: "2px solid var(--red)", color: "white" }}>
+    {!isJudge ? (
+      <div style={{ textAlign: 'center' }}>
+        <h3 className="bebas">JUDGE ACCESS</h3>
+        <input 
+          type="password" 
+          placeholder="Enter Secret Code" 
+          onChange={(e) => setPass(e.target.value)}
+          style={{ padding: "10px", borderRadius: "4px", border: "none" }}
+        />
+        <button onClick={handleLogin} className="btn-main" style={{ marginLeft: "10px" }}>LOGIN</button>
+      </div>
+    ) : (
+      <div style={{ maxWidth: "600px", margin: "0 auto" }}>
+        <h3 className="bebas" style={{ color: "var(--red)" }}>JUDGE DASHBOARD</h3>
+        <p>Enter scores for the artists below:</p>
+        
+        {/* Voting Row Example */}
+        {["Artist 1", "Artist 2", "Artist 3"].map(artist => (
+          <div key={artist} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px', background: '#222', padding: '10px' }}>
+            <span>{artist}</span>
+            <input 
+              type="number" 
+              placeholder="Score 1-10" 
+              onChange={(e) => updateVote(artist, e.target.value)}
+              style={{ width: "100px" }}
+            />
+          </div>
+        ))}
+
+        <div style={{ marginTop: "20px", borderTop: "1px solid #444", paddingTop: "10px" }}>
+          <h4 className="bebas">LIVE TOTAL: {calculateTotal()}</h4>
+        </div>
+        <button onClick={() => setIsJudge(false)} style={{ color: "gray", background: "none", border: "none", cursor: "pointer" }}>Logout</button>
+      </div>
+    )}
+  </div>  
 
         {/* FOOTER */}
           <div style={{borderTop:"1px solid #1a1a1a", padding:"1.25rem clamp(1rem,4vw,3rem)", display:"flex", flexWrap:"wrap", justifyContent:"space-between", alignItems:"center", gap:".75rem"}}>
