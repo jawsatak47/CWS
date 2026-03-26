@@ -675,6 +675,7 @@
 
     // ── ROOT ──────────────────────────────────────────────────────────────────
    function CanvasWars() {
+  // 1. LOGIC SECTION (Keep this at the top)
   const [isJudge, setIsJudge] = React.useState(false);
   const [pass, setPass] = React.useState("");
   const [votes, setVotes] = React.useState({}); 
@@ -695,16 +696,49 @@
     return Object.values(votes).reduce((a, b) => a + Number(b), 0);
   };
 
+  // 2. THE VIEW SECTION (Only ONE return allowed)
   return (
-    <div style={{background:"#0d0d0d", minHeight:"100vh"}}>
+    <div style={{background:"#0d0d0d", minHeight:"100vh", color: "white"}}>
       <div className="noise-layer"/>
-      {/* ... the rest of your app content goes here ... */}
+      <div className="scanlines"/>
 
-      {/* MAKE SURE THIS IS AT THE VERY END OF YOUR APP CONTENT */}
+      {/* --- ALL YOUR WEBSITE CONTENT (Logo, Header, Info) GOES HERE --- */}
+
+      {/* 3. THE JUDGE DASHBOARD (Paste this above the footer) */}
+      <div style={{ padding: "2rem", background: "#111", borderTop: "2px solid var(--red)", marginTop: "40px" }}>
+        {!isJudge ? (
+          <div style={{ textAlign: 'center' }}>
+            <h3 className="bebas">JUDGE ACCESS</h3>
+            <input 
+              type="password" 
+              placeholder="Enter Secret Code" 
+              onChange={(e) => setPass(e.target.value)}
+              style={{ padding: "10px", color: "#000" }}
+            />
+            <button onClick={handleLogin} className="btn-main" style={{ marginLeft: "10px" }}>LOGIN</button>
+          </div>
+        ) : (
+          <div style={{ maxWidth: "600px", margin: "0 auto" }}>
+            <h3 className="bebas" style={{ color: "var(--red)" }}>JUDGE DASHBOARD</h3>
+            {["Artist 1", "Artist 2", "Artist 3"].map(artist => (
+              <div key={artist} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
+                <span>{artist}</span>
+                <input type="number" onChange={(e) => updateVote(artist, e.target.value)} style={{color: "#000"}} />
+              </div>
+            ))}
+            <h4 className="bebas">TOTAL: {calculateTotal()}</h4>
+            <button onClick={() => setIsJudge(false)}>Logout</button>
+          </div>
+        )}
+      </div>
+
+      {/* --- YOUR FOOTER & PAYMENT BUTTONS GO HERE --- */}
+
     </div>
-  ); 
-} 
+  ); // This closes the return
+} // This closes the function
 
+// 4. THE RENDER (Only at the VERY bottom)
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(<CanvasWars/>);
   };
