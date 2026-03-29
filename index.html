@@ -1,9 +1,10 @@
+NEW fully
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Canvas Wars 2026 — Oh's Osaka & Timeless Treasures Hub : Live Art Battle! · Medford, OR</title>
+  <title>Canvas Wars 2026 — Live Art Battle · Medford, OR</title>
   <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -106,7 +107,7 @@
     const ARTISTS = [
       { id:1, name:"JawsAtak",    avatar:"47", medium:"TBD",   status:"PAINTING",   wins:0, color:"#ff6b35", bio:"Humboldt.", tags:["Acrylic","Mixed Media","Texture"], featured:true  },
       { id:2, name:"Aaron G",    avatar:"AG", medium:"TBD",        status:"PAINTING",   wins:0, color:"#4ecdc4", bio:"TTH Owner.", tags:["Watercolor","Ink","Illustrative"] },
-      { id:3, name:"Tami G",   avatar:"TG", medium:"TBD",       status:"PAINTING",   wins:0, color:"#ffd700", bio:"TTH Owner.", tags:["Charcoal","Marker","Street"] },
+      { id:3, name:"Tami G",   avatar:"TG", medium:"TBD",       status:”Painting”,   wins:0, color:"#ffd700", bio:"TTH Owner.", tags:["Charcoal","Marker","Street"] },
       { id:4, name:"Chad T",   avatar:"CT", medium:"TBD",     status:"PAINTING",   wins:0, color:"#ffd700", bio:"Oh's.", tags:["Acrylic","Gold Leaf","Gestural"] },
       { id:5, name:"Jim W",    avatar:"JW", medium:"TBD", status:"PAINTING",   wins:0, color:"#ff2244", bio:"Oh's.", tags:["Ballpoint","Acrylic","Detail"] },
       { id:6, name:"Mike C", avatar:"MC", medium:"TBD",     status:"PAINTING", wins:0, color:"#ff2244",    bio:"Oh's.", tags:["Marker","Watercolor","Mural"] },
@@ -141,17 +142,17 @@
 
     const WEEKLY_BATTLES = [
       {id:1,theme:"???",           revealed:false,status:"LIVE",    hoursLeft:2, minsLeft:44,entry:5, participants:12,max:20,prize:"$50 + Feature Slot"},
-      {id:2,theme:"URBAN DECAY",   revealed:true, status:"UPCOMING",daysLeft:3,  hoursLeft:14,entry:8, participants:0, max:16,prize:"$100 + Merch"},
-      {id:3,theme:"NEON WILDERNESS",revealed:true,status:"UPCOMING",daysLeft:7,  hoursLeft:0, entry:10,participants:0, max:16,prize:"$tbd"},
+      {id:2,theme:”Illustrative”,   revealed:true, status:"UPCOMING",daysLeft:3,  hoursLeft:14,entry:8, participants:0, max:16,prize:"$100 + Merch"},
+      {id:3,theme:”Abstract”,revealed:true,status:"UPCOMING",daysLeft:7,  hoursLeft:0, entry:10,participants:0, max:16,prize:"$tbd"},
     ];
 
     const AUCTION_ITEMS = [
-      {id:1,title:"artist 1",   artist:"TBD",    currentBid:0,bids:0, startBid:100},
-      {id:2,title:"artist 2",     artist:"TBD",    currentBid:0,bids:0, startBid:100},
-      {id:3,title:"artist 3",      artist:"TBD",   currentBid:0,bids:0, startBid:100},
-      {id:4,title:"artist 4",       artist:"TBD",   currentBid:0,bids:0,startBid:100},
-      {id:5,title:"artist 5", artist:"TBD",    currentBid:0,bids:0, startBid:100},
-      {id:6,title:"artist 6",   artist:"TBD", currentBid:0, bids:0, startBid:100},
+      {id:1,title:"FRACTURE POINT",   artist:"TBD",    currentBid:0,bids:0, startBid:100},
+      {id:2,title:"TIDE MARKERS",     artist:"TBD",    currentBid:0,bids:0, startBid:100},
+      {id:3,title:"CARBON ECHO",      artist:"TBD",   currentBid:0,bids:0, startBid:100},
+      {id:4,title:"GILT SIEGE",       artist:"TBD",   currentBid:0,bids:0,startBid:100},
+      {id:5,title:"BLUE LINE THEORY", artist:"TBD",    currentBid:0,bids:0, startBid:100},
+      {id:6,title:"VAGRANT SIGNAL",   artist:"TBD", currentBid:0, bids:0, startBid:100},
     ];
 
     const TABS = [
@@ -693,7 +694,7 @@
                     <div className="bebas glow-red" style={{fontSize:"clamp(2.5rem,7vw,5rem)",lineHeight:.9,letterSpacing:".02em",color:"#ff2244",textShadow:"0 0 40px #ff224488"}}>CANVAS</div>
                     <div className="bebas" style={{fontSize:"clamp(2.5rem,7vw,5rem)",lineHeight:.9,letterSpacing:".02em",color:"#fff"}}>WARS</div>
                   </div>
-                  <div className="barlow" style={{color:"#555",fontSize:".8rem",letterSpacing:".12em",fontWeight:600,marginTop:".4rem"}}>LIVE ART BATTLE by Oh's Osaka & Timeless Treasures Hub · Medford PARK · MEDFORD, OR</div>
+                  <div className="barlow" style={{color:"#555",fontSize:".8rem",letterSpacing:".12em",fontWeight:600,marginTop:".4rem"}}>LIVE ILLUSTRATIVE ART BATTLE · BEAR CREEK PARK · MEDFORD, OR</div>
                 </div>
                 <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:".35rem"}}>
                   <div style={{display:"flex",alignItems:"center",gap:".5rem"}}>
@@ -702,7 +703,7 @@
                   </div>
                   <div className="barlow" style={{color:"#444",fontSize:".75rem"}}>6 Artists · 24×24 Canvas · Timed Battle</div>
                   <div style={{display:"flex",gap:".4rem"}}>
-                    {[["1ST · $300","#ff224415","#ff224430","#ff2244"],["2ND · $150","#1a1a1a","#222","#888"],["3RD · $50","#1a1a1a","#222","#666"]].map(([l,bg,border,color])=>(
+                    {[["1ST · $300","#ff224415","#ff224430","#ff2244"],["2ND · $150","#1a1a1a","#222","#888"],["3RD · $75","#1a1a1a","#222","#666"]].map(([l,bg,border,color])=>(
                       <span key={l} className="bebas" style={{background:bg,border:`1px solid ${border}`,color,fontSize:".8rem",letterSpacing:".08em",padding:"2px 10px",borderRadius:2}}>{l}</span>
                     ))}
                   </div>
@@ -733,11 +734,11 @@
 
         {/* FOOTER */}
           <div style={{borderTop:"1px solid #1a1a1a", padding:"1.25rem clamp(1rem,4vw,3rem)", display:"flex", flexWrap:"wrap", justifyContent:"space-between", alignItems:"center", gap:".75rem"}}>
-            <div className="bebas" style={{color:"#333", fontSize:"1rem", letterSpacing:".1em"}}>CANVAS WARS by Oh's Osaka & TimelessTreasures Hub · MEDFORD, OR · 2026</div>
+            <div className="bebas" style={{color:"#333", fontSize:"1rem", letterSpacing:".1em"}}>CANVAS WARS by Oh's Osaka & Timeless Treasures Hub · MEDFORD, OR · 2026</div>
             <div className="barlow" style={{color:"#2a2a2a", fontSize:".75rem"}}>No oils · No aerosols · No hazardous materials · Media release required · Artist entry $40 · Vendor fee $40</div>
           </div>
 
-          {/* REGISTRATION & PAYMENTS SECTION */}
+         {/* REGISTRATION & PAYMENTS SECTION */}
           <div className="container" style={{padding: "20px"}}> 
             <h3 style={{ fontFamily: 'Bebas Neue', color: '#B20000', marginTop: 0 }}>
               💳 REGISTRATION & PAYMENTS
