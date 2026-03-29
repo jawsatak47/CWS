@@ -338,49 +338,49 @@
     }
 
     // ── WEEKLY BATTLES ────────────────────────────────────────────────────────
-    function WeeklyBattles() {
+    unction WeeklyBattles() {
       return (
         <div>
           <SectionHead icon={<IconZap size={22} color="#ff2244"/>} title="WEEKLY DIGITAL BATTLES" sub="Entry fee: $2–$10 per battle · Square checkout · Winner announced 48h after close"/>
-  <div style={{display:"grid",gap:"1rem"}}>
-    {WEEKLY_BATTLES.map((b,i) => {
-      const isLive = b.status==="LIVE";
-      const pct = Math.round((b.participants/b.max)*100);
-      return (
-        <div key={b.id} className="fade-up" style={{background:"#111",border:`1px solid ${isLive?"#ff224440":"#1f1f1f"}`,borderRadius:4,padding:"1.25rem 1.5rem",animationDelay:`${i*0.1}s`}}>
-          <div style={{display:"flex",flexWrap:"wrap",justifyContent:"space-between",alignItems:"flex-start",gap:"1rem"}}>
-            <div>
-              <div style={{display:"flex",gap:".5rem",alignItems:"center",marginBottom:".4rem"}}>
-                {isLive && <span className="barlow glow-red" style={{fontSize:".65rem",fontWeight:700,letterSpacing:".15em",color:"#ff2244",background:"#ff224420",border:"1px solid #ff224440",padding:"2px 8px",borderRadius:2}}>● LIVE</span>}
-                {!isLive && <span className="barlow" style={{fontSize:".65rem",fontWeight:700,letterSpacing:".15em",color:"#555",background:"#1a1a1a",border:"1px solid #222",padding:"2px 8px",borderRadius:2}}>UPCOMING</span>}
-                <span className="barlow" style={{color:"#444",fontSize:".75rem"}}>BATTLE #{b.id}</span>
-              </div>
-              <div className="bebas" style={{fontSize:isLive?"2rem":"1.5rem",color:b.revealed?"#fff":"#ff2244",letterSpacing:".04em"}}>
-                {b.revealed ? b.theme : <span>THEME LOCKED 🔒</span>}
-              </div>
-              <div className="barlow" style={{color:"#555",fontSize:".8rem",marginTop:2}}>Prize: <span style={{color:"#888"}}>{b.prize}</span></div>
-            </div>
-            <div style={{textAlign:"right"}}>
-              <div className="barlow" style={{color:"#555",fontSize:".65rem",letterSpacing:".1em",fontWeight:700,marginBottom:2}}>TIME REMAINING</div>
-              <div className="bebas" style={{fontSize:"1.6rem",color:isLive?"#ff2244":"#666",letterSpacing:".02em"}}>
-                {isLive ? `${b.hoursLeft}h ${b.minsLeft}m` : b.daysLeft ? `${b.daysLeft}d ${b.hoursLeft}h` : `${b.hoursLeft}h`}
-              </div>
-              <div className="barlow" style={{color:"#555",fontSize:".7rem",marginTop:4}}>Entry: <span style={{color:"#ff2244",fontWeight:700}}>${b.entry}</span></div>
-            </div>
-          </div>
-          <div style={{marginTop:"1rem"}}>
-            <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}>
-              <div className="barlow" style={{color:"#444",fontSize:".7rem",fontWeight:700,letterSpacing:".1em"}}>SLOTS FILLED</div>
-              <div className="barlow" style={{color:"#666",fontSize:".75rem"}}>{b.participants} / {b.max}</div>
-            </div>
-            <div style={{height:3,background:"#1e1e1e",borderRadius:2}}>
-              <div className="entry-bar" style={{width:`${pct}%`,background:isLive?"#ff2244":"#333"}}/>
-            </div>
-          </div>
-          <div style={{marginTop:"1rem",display:"flex",gap:".75rem",flexWrap:"wrap"}}>
-            <a href="https://square.link/u/GPC9oiHB" target="_blank" rel="noreferrer" style={{textDecoration:"none"}}>
-              <button className="sponsor-cta" style={{display:"flex",alignItems:"center",gap:".4rem",fontSize:".9rem"}}>
-                ENTER BATTLE → PAY VIA SQUARE <IconExtLink size={13}/>
+          <div style={{display:"grid",gap:"1rem"}}>
+            {WEEKLY_BATTLES.map((b,i) => {
+              const isLive = b.status==="LIVE";
+              const pct = Math.round((b.participants/b.max)*100);
+              return (
+                <div key={b.id} className="fade-up" style={{background:"#111",border:`1px solid ${isLive?"#ff224440":"#1f1f1f"}`,borderRadius:4,padding:"1.25rem 1.5rem",animationDelay:`${i*0.1}s`}}>
+                  <div style={{display:"flex",flexWrap:"wrap",justifyContent:"space-between",alignItems:"flex-start",gap:"1rem"}}>
+                    <div>
+                      <div style={{display:"flex",gap:".5rem",alignItems:"center",marginBottom:".4rem"}}>
+                        {isLive && <span className="barlow glow-red" style={{fontSize:".65rem",fontWeight:700,letterSpacing:".15em",color:"#ff2244",background:"#ff224420",border:"1px solid #ff224440",padding:"2px 8px",borderRadius:2}}>● LIVE</span>}
+                        {!isLive && <span className="barlow" style={{fontSize:".65rem",fontWeight:700,letterSpacing:".15em",color:"#555",background:"#1a1a1a",border:"1px solid #222",padding:"2px 8px",borderRadius:2}}>UPCOMING</span>}
+                        <span className="barlow" style={{color:"#444",fontSize:".75rem"}}>BATTLE #{b.id}</span>
+                      </div>
+                      <div className="bebas" style={{fontSize:isLive?"2rem":"1.5rem",color:b.revealed?"#fff":"#ff2244",letterSpacing:".04em"}}>
+                        {b.revealed ? b.theme : <span>THEME LOCKED 🔒</span>}
+                      </div>
+                      <div className="barlow" style={{color:"#555",fontSize:".8rem",marginTop:2}}>Prize: <span style={{color:"#888"}}>{b.prize}</span></div>
+                    </div>
+                    <div style={{textAlign:"right"}}>
+                      <div className="barlow" style={{color:"#555",fontSize:".65rem",letterSpacing:".1em",fontWeight:700,marginBottom:2}}>TIME REMAINING</div>
+                      <div className="bebas" style={{fontSize:"1.6rem",color:isLive?"#ff2244":"#666",letterSpacing:".02em"}}>
+                        {isLive ? `${b.hoursLeft}h ${b.minsLeft}m` : b.daysLeft ? `${b.daysLeft}d ${b.hoursLeft}h` : `${b.hoursLeft}h`}
+                      </div>
+                      <div className="barlow" style={{color:"#555",fontSize:".7rem",marginTop:4}}>Entry: <span style={{color:"#ff2244",fontWeight:700}}>${b.entry}</span></div>
+                    </div>
+                  </div>
+                  <div style={{marginTop:"1rem"}}>
+                    <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}>
+                      <div className="barlow" style={{color:"#444",fontSize:".7rem",fontWeight:700,letterSpacing:".1em"}}>SLOTS FILLED</div>
+                      <div className="barlow" style={{color:"#666",fontSize:".75rem"}}>{b.participants} / {b.max}</div>
+                    </div>
+                    <div style={{height:3,background:"#1e1e1e",borderRadius:2}}>
+                      <div className="entry-bar" style={{width:`${pct}%`,background:isLive?"#ff2244":"#333"}}/>
+                    </div>
+                  </div>
+                  <div style={{marginTop:"1rem",display:"flex",gap:".75rem",flexWrap:"wrap"}}>
+                    <a href="https://square.link/u/GPC9oiHB" target="_blank" rel="noreferrer" style={{textDecoration:"none"}}>
+                      <button className="sponsor-cta" style={{display:"flex",alignItems:"center",gap:".4rem",fontSize:".9rem"}}>
+                        ENTER BATTLE → PAY VIA SQUARE <IconExtLink size={13}/>
                       </button>
                     </a>
                     <button style={{fontFamily:"'Barlow Condensed',sans-serif",fontWeight:700,fontSize:".85rem",padding:".6rem 1rem",background:"transparent",border:"1px solid #2a2a2a",color:"#555",borderRadius:2,cursor:"pointer"}}>
