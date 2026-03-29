@@ -1,14 +1,9 @@
+Mar 29 best
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <script type="importmap">
-  {
-    "imports": {
-      "firebase/app": "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js",
-      "firebase/firestore": "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js"
-    }
-  }
-</script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Canvas Wars 2026 — Oh's Osaka & Timeless Treasures Hub Live Art Battle · Medford, OR</title>
@@ -318,13 +313,9 @@
                   </div>
                   <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
                     <div className="barlow" style={{color:"#555",fontSize:".75rem"}}><span style={{color:"#888",fontWeight:700}}>{v}</span> votes</div>
-                    <button 
-  className={`vote-btn ${votedFor === "test" ? "voted-btn" : ""}`} 
-  onClick={handleVote} 
-  disabled={votedFor === "test" || isElim}
->
-  {votedFor === "test" ? "✓ VOTED" : isElim ? "ELIMINATED" : `VOTE (${liveVotes})`}
-</button>
+                    <button className={`vote-btn ${isVoted?"voted-btn":""}`} onClick={()=>handleVote(a.id)} disabled={hasVoted||isElim}>
+                      {isVoted?"✓ VOTED":isElim?"ELIMINATED":"VOTE"}
+                    </button>
                   </div>
                 </div>
               );
