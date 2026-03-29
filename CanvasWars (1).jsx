@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
 import { Zap, Trophy, Clock, DollarSign, Star, ExternalLink, Gavel, Users, Award, ChevronRight, Mic, ShieldCheck, Tag, BarChart2 } from "lucide-react";
 
+// ADD THESE TWO LINES BELOW THE OTHERS:
+import { db } from './firebase'; 
+import { doc, updateDoc, increment, onSnapshot } from "firebase/firestore";
 // ── STYLES ──────────────────────────────────────────────────────────────────
 const STYLES = `
 @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;600;700;900&family=Barlow:wght@400;500;600&display=swap');
@@ -788,6 +791,31 @@ export default function CanvasWars() {
   const [tab, setTab] = useState("live");
   const [votes, setVotes] = useState({});
   const [votedFor, setVotedFor] = useState(null);
+  // --- FIREBASE LIVE LOGIC START ---
+  const [liveVotes, setLiveVotes] = useState(0);
+
+  useEffect(() => {
+    // This connects to the 'test' document in your 'artists' collection
+    const unsub = onSnapshot(doc(db, "artists", "test"), (docSnap) => {
+      if (docSnap.exists()) {
+        setLiveVotes(docSnap.data().votes);
+      }
+    });
+    return () => unsub();
+  }, []);
+
+  const handleVote = async () => {
+    const artistRef = doc(db, "artists", "test");
+    try {
+      await updateDoc(artistRef, {
+        votes: increment(1)
+      });
+      setVotedFor("test"); // Optional: marks that the user voted
+    } catch (err) {
+      console.error("Vote failed:", err);
+    }
+  };
+  // --- FIREBASE LIVE LOGIC END ---
 
   return (
     <div style={{ background:"#0d0d0d", minHeight:"100vh", fontFamily:"'Barlow',sans-serif" }}>
