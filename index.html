@@ -113,7 +113,45 @@ artistsRef.on('value', (snapshot) => {
     artistsRef.set(ARTISTS);
   }
 });
+// --- HOMEPAGE THEME SONG COMPONENT ---
+const ThemeAudio = () => {
+  const [isPlaying, setIsPlaying] = React.useState(false);
+  const audioRef = React.useRef(new Audio('themesong.mp3'));
 
+  React.useEffect(() => {
+    audioRef.current.loop = true;
+    audioRef.current.volume = 0.4;
+  }, []);
+
+  const togglePlay = () => {
+    if (isPlaying) {
+      audioRef.current.pause();
+    } else {
+      audioRef.current.play().catch(err => console.log(err));
+    }
+    setIsPlaying(!isPlaying);
+  };
+
+  return (
+    <button 
+      onClick={togglePlay}
+      style={{
+        background: isPlaying ? '#ff2244' : '#111111',
+        color: '#ffffff',
+        border: '1px solid #ff2244',
+        padding: '6px 12px',
+        borderRadius: '4px',
+        cursor: 'pointer',
+        fontFamily: 'sans-serif',
+        fontSize: '0.8rem',
+        fontWeight: 'bold',
+        marginLeft: '15px'
+      }}
+    >
+      {isPlaying ? '⏸ PAUSE MUSIC' : '▶ PLAY MUSIC'}
+    </button>
+  );
+};
     // ── INLINE ICONS (no lucide dependency) ──────────────────────────────────
     const Icon = ({ d, size = 16, color = "currentColor", style = {} }) => (
       <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
@@ -763,12 +801,15 @@ artistsRef.on('value', (snapshot) => {
 
           {/* TABS */}
           <div style={{borderBottom:"1px solid #1e1e1e",background:"#0d0d0d",position:"sticky",top:0,zIndex:100}}>
-            <div style={{maxWidth:1300,margin:"0 auto",padding:"0 clamp(.5rem,3vw,2rem)",display:"flex",overflowX:"auto"}}>
-              {TABS.map(t=>(
-                <button key={t.id} className={`tab-btn ${tab===t.id?"tab-active":""}`} onClick={()=>setTab(t.id)}>{t.label}</button>
-              ))}
-            </div>
+        <div style={{maxWidth:1300,margin:"0 auto",padding:"0 clamp(.5rem,3vw,2rem)",display:"flex",alignItems:"center",overflowX:"auto"}}>
+          <div style={{display:"flex", flexGrow: 1}}>
+            {TABS.map(t=>(
+              <button key={t.id} className={`tab-btn ${tab===t.id?"tab-active":""}`} onClick={()=>setTab(t.id)}>{t.label}</button>
+            ))}
           </div>
+          <ThemeAudio />
+        </div>
+      </div>
 
           {/* MAIN */}
           <div style={{maxWidth:1300,margin:"0 auto",padding:"2rem clamp(1rem,4vw,3rem) 4rem"}}>
