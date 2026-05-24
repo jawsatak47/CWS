@@ -264,14 +264,32 @@ artistsRef.on('value', (snapshot) => {
 
     // ── LIVE BATTLE ───────────────────────────────────────────────────────────
     function LiveBattle({ votes, setVotes, votedFor, setVotedFor }) {
+      // Listen to the live votes node in Firebase
+  React.useEffect(() => {
+    const votesRef = database.ref('votes');
+    votesRef.on('value', (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        setVotes(data);
+      }
+    });
+    return () => votesRef.off();
+  }, []);
       const cd = useCountdown("2026-06-06T23:00:00Z");
       const totalVotes = Object.values(votes).reduce((a,b)=>a+b,0) || 1;
 
       const handleVote = (id) => {
-        if (votedFor !== null) return;
-        setVotes(v => ({...v,[id]:(v[id]||0)+1}));
-        setVotedFor(id);
-      };
+    if (votedFor !== null) return;
+
+    // 1. Tell Firebase to increase this specific artist's vote id count by 1
+    const voteRef = database.ref(`votes/${id}`);
+    voteRef.transaction((currentVotes) => {
+      return (currentVotes || 0) + 1;
+    });
+
+    // 2. Keep this line so the local browser remembers they already clicked vote
+    setVotedFor(id);
+  };
 
       return (
         <div>
