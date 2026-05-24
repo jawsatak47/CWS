@@ -95,6 +95,24 @@ const firebaseConfig = {
     firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
     const { useState, useEffect } = React;
+    // --- LIVE DATABASE SYNC ---
+const artistsRef = database.ref('artists');
+
+// Listen to Firebase for real-time updates
+artistsRef.on('value', (snapshot) => {
+  const data = snapshot.val();
+  if (data) {
+    // Loop through the data from Firebase and update our local ARTISTS array live
+    data.forEach((firebaseArtist, index) => {
+      if (ARTISTS[index]) {
+        ARTISTS[index].wins = firebaseArtist.wins || 0;
+      }
+    });
+  } else {
+    // If the database is completely empty (like right now), seed it with your initial list
+    artistsRef.set(ARTISTS);
+  }
+});
 
     // ── INLINE ICONS (no lucide dependency) ──────────────────────────────────
     const Icon = ({ d, size = 16, color = "currentColor", style = {} }) => (
