@@ -209,10 +209,10 @@ const ThemeAudio = () => {
       ],
     };
 
-    const WEEKLY_BATTLES = [
-      {id:1,theme:"???",           revealed:false,status:"LIVE",    hoursLeft:2, minsLeft:44,entry:10, participants:1,max:10,prize:"$100 + Feature Slot"},
-      {id:2,theme:"???",   revealed:true, status:"UPCOMING",daysLeft:3,  hoursLeft:14,entry:10, participants:0, max:10,prize:"$50"},
-      {id:3,theme:"???",revealed:true,status:"UPCOMING",daysLeft:7,  hoursLeft:0, entry:10,participants:0, max:10,prize:"$50"},
+    const WEEKLY_CLASSES = [
+      {id:1,theme:"Graffiti Fundamentals",           revealed:false,status:"UPCOMMING",    hoursLeft:2, minsLeft:44,entry:10, participants:1,max:10,prize:"$100 + Feature Slot"},
+      {id:2,theme:"Calligraphy",   revealed:true, status:"UPCOMING",daysLeft:3,  hoursLeft:14,entry:10, participants:0, max:10,prize:"$50"},
+      {id:3,theme:"Gold Leaf",revealed:true,status:"UPCOMING",daysLeft:7,  hoursLeft:0, entry:10,participants:0, max:10,prize:"$50"},
     ];
 
     const AUCTION_ITEMS = [
@@ -226,7 +226,7 @@ const ThemeAudio = () => {
 
     const TABS = [
       {id:"live",    label:"🎨 LIVE BATTLE"},
-      {id:"weekly",  label:"⚡ WEEKLY BATTLES"},
+      {id:"weekly",  label:"⚡ WEEKLY CLASSES"},
       {id:"leaders", label:"🏆 LEADERBOARD"},
       {id:"artists", label:"👤 ARTISTS"},
       {id:"auction", label:"🔇 SILENT AUCTION"},
@@ -426,12 +426,12 @@ const ThemeAudio = () => {
     }
 
     // ── WEEKLY BATTLES ────────────────────────────────────────────────────────
-    function WeeklyBattles() {
+    function WeeklyClasses() {
       return (
         <div>
-          <SectionHead icon={<IconZap size={22} color="#ff2244"/>} title="WEEKLY DIGITAL BATTLES" sub="Entry fee: $2–$10 per battle · Square checkout · Winner announced 48h after close"/>
+          <SectionHead icon={<IconZap size={22} color="#ff2244"/>} title="WEEKLY CLASSES" sub="Entry fee: $20 per class · Square checkout · email after recieved"/>
           <div style={{display:"grid",gap:"1rem"}}>
-            {WEEKLY_BATTLES.map((b,i) => {
+            {WEEKLY_CLASSES.map((b,i) => {
               const isLive = b.status==="LIVE";
               const pct = Math.round((b.participants/b.max)*100);
               return (
@@ -441,7 +441,7 @@ const ThemeAudio = () => {
                       <div style={{display:"flex",gap:".5rem",alignItems:"center",marginBottom:".4rem"}}>
                         {isLive && <span className="barlow glow-red" style={{fontSize:".65rem",fontWeight:700,letterSpacing:".15em",color:"#ff2244",background:"#ff224420",border:"1px solid #ff224440",padding:"2px 8px",borderRadius:2}}>● LIVE</span>}
                         {!isLive && <span className="barlow" style={{fontSize:".65rem",fontWeight:700,letterSpacing:".15em",color:"#555",background:"#1a1a1a",border:"1px solid #222",padding:"2px 8px",borderRadius:2}}>UPCOMING</span>}
-                        <span className="barlow" style={{color:"#444",fontSize:".75rem"}}>BATTLE #{b.id}</span>
+                        <span className="barlow" style={{color:"#444",fontSize:".75rem"}}>CLASS #{b.id}</span>
                       </div>
                       <div className="bebas" style={{fontSize:isLive?"2rem":"1.5rem",color:b.revealed?"#fff":"#ff2244",letterSpacing:".04em"}}>
                         {b.revealed ? b.theme : <span>THEME LOCKED 🔒</span>}
@@ -449,7 +449,7 @@ const ThemeAudio = () => {
                       <div className="barlow" style={{color:"#555",fontSize:".8rem",marginTop:2}}>Prize: <span style={{color:"#888"}}>{b.prize}</span></div>
                     </div>
                     <div style={{textAlign:"right"}}>
-                      <div className="barlow" style={{color:"#555",fontSize:".65rem",letterSpacing:".1em",fontWeight:700,marginBottom:2}}>TIME REMAINING</div>
+                      <div className="barlow" style={{color:"#555",fontSize:".65rem",letterSpacing:".1em",fontWeight:700,marginBottom:2}}>TIME</div>
                       <div className="bebas" style={{fontSize:"1.6rem",color:isLive?"#ff2244":"#666",letterSpacing:".02em"}}>
                         {isLive ? `${b.hoursLeft}h ${b.minsLeft}m` : b.daysLeft ? `${b.daysLeft}d ${b.hoursLeft}h` : `${b.hoursLeft}h`}
                       </div>
@@ -466,7 +466,7 @@ const ThemeAudio = () => {
                     </div>
                   </div>
                   <div style={{marginTop:"1rem",display:"flex",gap:".75rem",flexWrap:"wrap"}}>
-                    <a href="https://square.link/u/GPC9oiHB" target="_blank" rel="noreferrer" style={{textDecoration:"none"}}>
+                    <a href="https://square.link/u/uMF9giSn" target="_blank" rel="noreferrer" style={{textDecoration:"none"}}>
                       <button className="sponsor-cta" style={{display:"flex",alignItems:"center",gap:".4rem",fontSize:".9rem"}}>
                         ENTER BATTLE → PAY VIA SQUARE <IconExtLink size={13}/>
                       </button>
