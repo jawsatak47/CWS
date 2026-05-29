@@ -210,9 +210,9 @@ const ThemeAudio = () => {
     };
 
     const WEEKLY_CLASSES = [
-      {id:1,theme:"Graffiti Fundamentals",           revealed:false,status:"UPCOMMING",    hoursLeft:2, minsLeft:44,entry:10, participants:1,max:10,prize:"$100 + Feature Slot"},
-      {id:2,theme:"Calligraphy",   revealed:true, status:"UPCOMING",daysLeft:3,  hoursLeft:14,entry:10, participants:0, max:10,prize:"$50"},
-      {id:3,theme:"Gold Leaf",revealed:true,status:"UPCOMING",daysLeft:7,  hoursLeft:0, entry:10,participants:0, max:10,prize:"$50"},
+      {id:1,theme:"Graffiti Fundamentals",           revealed:false,status:"UPCOMMING",    hoursLeft:2, minsLeft:44,entry:10, participants:1,max:10,cost:"$20 + Feature Slot"},
+      {id:2,theme:"Calligraphy",   revealed:true, status:"UPCOMING",daysLeft:3,  hoursLeft:14,entry:10, participants:0, max:10,cost:"$20"},
+      {id:3,theme:"Gold Leaf",revealed:true,status:"UPCOMING",daysLeft:7,  hoursLeft:0, entry:10,participants:0, max:10,cost:"$20"},
     ];
 
     const AUCTION_ITEMS = [
@@ -444,7 +444,7 @@ const ThemeAudio = () => {
                         <span className="barlow" style={{color:"#444",fontSize:".75rem"}}>CLASS #{b.id}</span>
                       </div>
                       <div className="bebas" style={{fontSize:isLive?"2rem":"1.5rem",color:b.revealed?"#fff":"#ff2244",letterSpacing:".04em"}}>
-                        {b.revealed ? b.theme : <span>THEME LOCKED 🔒</span>}
+                        {b.revealed ? b.theme : <span>Graffiri Fundamentals </span>}
                       </div>
                       <div className="barlow" style={{color:"#555",fontSize:".8rem",marginTop:2}}>Prize: <span style={{color:"#888"}}>{b.prize}</span></div>
                     </div>
