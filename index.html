@@ -116,7 +116,7 @@ artistsRef.on('value', (snapshot) => {
 // --- HOMEPAGE THEME SONG COMPONENT ---
 const ThemeAudio = () => {
   const [isPlaying, setIsPlaying] = React.useState(false);
-  const audioRef = React.useRef(new Audio('themesong.mp3'));
+  const audioRef = React.useRef(new Audio('./themesong.mp3'));
 
   React.useEffect(() => {
     audioRef.current.loop = true;
