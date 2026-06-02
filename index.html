@@ -428,65 +428,67 @@ const ThemeAudio = () => {
       );
     }
 
-    // ── WEEKLY CLASSES ────────────────────────────────────────────────────────
-    function WeeklyClasses() {
-      return (
-<div className="barlow" style={{color:"#555",fontSize:".65rem",letterSpacing:".1rem",fontWeight:700,marginBottom:2}}>DATE</div>
-        <div className="bebas" style={{fontSize:"1.6rem",color:isLive?"#ff2244":"#666",letterSpacing:".02rem"}}>
-  {b.date}
-</div>
-          <div style={{display:"grid",gap:"1rem"}}>
-            {WEEKLY_CLASSES.map((b,i) => {
-              const isLive = b.status==="LIVE";
-              const pct = Math.round((b.participants/b.max)*100);
-              return (
+   // --- WEEKLY CLASSES ---
+function WeeklyClasses() {
+  return (
     <div>
       <SectionHead icon={<IconZap size={22} color="#ff2244"/>} title="WEEKLY CLASSES" sub="Entry fee: $20 per class · Square checkout · email after received" />
       <div style={{display:"grid",gap:"1rem"}}>
         {WEEKLY_CLASSES.map((b,i) => {
+          const isLive = b.status==="LIVE";
+          const pct = Math.round((b.participants/b.max)*100);
           return (
-            <div className="bebas" style={{fontSize:isLive?"2rem":"1.5rem",color:b.revealed?"#fff":"#ff2244",letterSpacing:".04em"}}>
-                        {b.revealed ? b.theme : <span>Graffiri Fundamentals 1</span>}
-                      </div>
-                      <div className="barlow" style={{color:"#555",fontSize:".8rem",marginTop:2}}>Fee 20: <span style={{color:"#888"}}>{b.prize}</span></div>
-                    </div>
-                    <div style={{textAlign:"right"}}>
-  <div className="barlow" style={{color:"#555",fontSize:".65rem",letterSpacing:".1rem",fontWeight:700,marginBottom:2}}>DATE</div>
-  <div className="bebas" style={{fontSize:"1.6rem",color:isLive?"#ff2244":"#666",letterSpacing:".02rem"}}>
-    {b.date}
-  </div>
-                      <div className="barlow" style={{color:"#555",fontSize:".7rem",marginTop:4}}>Entry: <span style={{color:"#ff2244",fontWeight:700}}>${b.entry}</span></div>
-                    </div>
+            <div key={b.id} className="fade-up" style={{background:"#111",border:`1px solid ${isLive?"#ff2244":"#1f1f1f"}`,borderRadius:"6px",padding:"1.5rem"}}>
+              <div style={{display:"flex",flexWrap:"wrap",justifyContent: "space-between",alignItems:"flex-start",gap:"1rem"}}>
+                <div>
+                  <div style={{display:"flex",gap:".5rem",alignItems:"center",marginBottom:".4rem"}}>
+                    {isLive && <span className="barlow glow-red" style={{fontSize:".65rem",fontWeight:700,letterSpacing:".15rem",color:"#ff2244"}}>LIVE</span>}
+                    {!isLive && <span className="barlow" style={{fontSize:".65rem",fontWeight:700,letterSpacing:".15rem",color:"#555"}}>UPCOMING</span>}
+                    <span className="barlow" style={{color:"#444",fontSize:".75rem"}}>CLASS #{b.id}</span>
                   </div>
-                  <div style={{marginTop:"1rem"}}>
-                    <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}>
-                      <div className="barlow" style={{color:"#444",fontSize:".7rem",fontWeight:700,letterSpacing:".1em"}}>SLOTS FILLED</div>
-                      <div className="barlow" style={{color:"#666",fontSize:".75rem"}}>{b.participants} / {b.max}</div>
-                    </div>
-                    <div style={{height:3,background:"#1e1e1e",borderRadius:2}}>
-                      <div className="entry-bar" style={{width:`${pct}%`,background:isLive?"#ff2244":"#333"}}/>
-                    </div>
+                  <div className="bebas" style={{fontSize:"1.5rem",color:"#fff",letterSpacing:".04rem"}}>
+                    {b.theme}
                   </div>
-                  <div style={{marginTop:"1rem",display:"flex",gap:".75rem",flexWrap:"wrap"}}>
-                    <a href="https://square.link/u/uMF9giSn" target="_blank" rel="noreferrer" style={{textDecoration:"none"}}>
-                      <button className="sponsor-cta" style={{display:"flex",alignItems:"center",gap:".4rem",fontSize:".9rem"}}>
-                        ENTER CLASS → PAY VIA SQUARE <IconExtLink size={13}/>
-                      </button>
-                    </a>
-                    <a href={b.infoLink || "#"} target="_blank" rel="noreferrer" style={{textDecoration:"none"}}>
-            <button style={{fontFamily:"'Barlow Condensed',sans-serif",fontWeight:700,fontSize:".85rem",padding:".6rem 1.2rem",background:"transparent",color:"#888",border:"1px solid #333",borderRadius:"4px",cursor:"pointer",textTransform:"uppercase"}}>
-              CLASS INFO
-            </button>
-          </a>
+                  <div className="barlow" style={{color:"#555",fontSize:".8rem",marginTop:2}}>Fee: <span style={{color:"#888"}}>${b.entryFee}</span></div>
+                </div>
+                
+                <div style={{textAlign:"right"}}>
+                  <div className="barlow" style={{color:"#555",fontSize:".65rem",letterSpacing:".1rem",fontWeight:700,marginBottom:2}}>DATE</div>
+                  <div className="bebas" style={{fontSize:"1.6rem",color:isLive?"#ff2244":"#666",letterSpacing:".02rem"}}>
+                    {b.date}
                   </div>
                 </div>
-              );
-            })}
-          </div>
-        </div>
-      );
-    }
+              </div>
 
+              <div style={{marginTop:"1rem"}}>
+                <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}>
+                  <div className="barlow" style={{color:"#444",fontSize:".7rem",fontWeight:700,letterSpacing:".1rem"}}>SLOTS FILLED</div>
+                  <div className="barlow" style={{color:"#666",fontSize:".75rem"}}>{b.participants} / {b.max}</div>
+                </div>
+                <div style={{background:"#1a1a1a",height:4,borderRadius:2,overflow:"hidden"}}>
+                  <div style={{background:isLive?"#ff2244":"#333",width:`${pct}%`,height:"100%",transition:"width .3s"}} />
+                </div>
+              </div>
+
+              <div style={{display:"flex",gap:".5rem",marginTop:"1.5rem"}}>
+                <a href="https://square.link/u/uMf9gish" target="_blank" rel="noreferrer" style={{textDecoration:"none"}}>
+                  <button className="sponsor-cta" style={{display:"flex",alignItems:"center",gap:".4rem",fontSize:".9rem"}}>
+                    ENTER CLASS → PAY VIA SQUARE <IconExtLink size={13}/>
+                  </button>
+                </a>
+                <a href={b.infoLink || "#"} target="_blank" rel="noreferrer" style={{textDecoration:"none"}}>
+                  <button style={{fontFamily:"'Barlow Condensed',sans-serif",fontWeight:700,fontSize:".85rem",padding:".6rem 1.2rem",background:"transparent",color:"#888",border:"1px solid #333",borderRadius:"4px",cursor:"pointer",textTransform:"uppercase"}}>
+                    CLASS INFO
+                  </button>
+                </a>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
     // ── LEADERBOARD ───────────────────────────────────────────────────────────
     function Leaderboard() {
       const [filter, setFilter] = useState("all");
