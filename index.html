@@ -8,15 +8,16 @@
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;600;700;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet" />
+  
   <style>
     *{box-sizing:border-box;margin:0;padding:0;}
     :root{--red:#ff2244;--red-dim:#cc1a35;--bg:#0d0d0d;--card:#111111;--border:#1f1f1f;--muted:#555;--gold:#ffd700;}
     html,body,#root{min-height:100%;background:#0d0d0d;}
-    body{font-family:'Barlow',sans-serif;}
+    body{font-family:'Barlow',sans-serif;color:#e1e1e1;}
     .bebas{font-family:'Bebas Neue',sans-serif;}
     .barlow{font-family:'Barlow Condensed',sans-serif;}
 
@@ -50,6 +51,11 @@
     .artist-card{background:#111;border:1px solid #1f1f1f;border-radius:4px;transition:transform .2s,border-color .2s;}
     .artist-card:hover{transform:translateY(-3px);border-color:#ff224433;}
 
+    .photo-card{background:#111;border:1px solid #1f1f1f;border-radius:6px;overflow:hidden;position:relative;cursor:pointer;transition:transform .2s,border-color .2s,box-shadow .2s;}
+    .photo-card:hover{transform:translateY(-4px);border-color:var(--red);box-shadow:0 8px 24px rgba(255,34,68,0.25);}
+    .photo-card .overlay{position:absolute;inset:0;background:linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.4) 50%, transparent 100%);opacity:0;transition:opacity .25s ease;display:flex;flex-direction:column;justify-content:flex-end;padding:1rem;}
+    .photo-card:hover .overlay{opacity:1;}
+
     .status-painting{background:#ff224420;color:var(--red);border:1px solid #ff224440;animation:pulseGlow 2s ease-in-out infinite;}
     .status-finalist{background:#ffd70020;color:var(--gold);border:1px solid #ffd70040;animation:goldGlow 2s ease-in-out infinite;}
     .status-eliminated{background:#1a1a1a;color:#444;border:1px solid #2a2a2a;}
@@ -71,9 +77,10 @@
 
     .rank-badge{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;width:2.2rem;height:2.2rem;display:flex;align-items:center;justify-content:center;border-radius:2px;}
 
-    .entry-bar{height:4px;border-radius:2px;transition:width .6s ease;}
+    .btn-main{font-family:'Bebas Neue',sans-serif;letter-spacing:.08em;padding:.6rem 1.2rem;background:#ff2244;color:#fff;border:none;border-radius:4px;cursor:pointer;transition:all .2s;}
+    .btn-main:hover{background:var(--red-dim);transform:scale(1.02);}
 
-    ::-webkit-scrollbar{width:3px;}
+    ::-webkit-scrollbar{width:5px;height:5px;}
     ::-webkit-scrollbar-track{background:#0d0d0d;}
     ::-webkit-scrollbar-thumb{background:var(--red);border-radius:2px;}
   </style>
@@ -82,77 +89,76 @@
   <div id="root"></div>
 
   <script type="text/babel">
-    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyCZQX0OfI2m9_383_mbkkPi7TGBPXvLuAM",
-  authDomain: "canvaswars541.firebaseapp.com",
-  projectId: "canvaswars541",
-  storageBucket: "canvaswars541.firebasestorage.app",
-  messagingSenderId: "536740276923",
-  appId: "1:536740276923:web:73a0635344efb6d3fb579e",
-  measurementId: "G-NPL4RVL4SJ"
-};
+    const firebaseConfig = {
+      apiKey: "AIzaSyCZQX0OfI2m9_383_mbkkPi7TGBPXvLuAM",
+      authDomain: "canvaswars541.firebaseapp.com",
+      projectId: "canvaswars541",
+      storageBucket: "canvaswars541.firebasestorage.app",
+      messagingSenderId: "536740276923",
+      appId: "1:536740276923:web:73a0635344efb6d3fb579e",
+      measurementId: "G-NPL4RVL4SJ"
+    };
     firebase.initializeApp(firebaseConfig);
-const database = firebase.database();
-    const { useState, useEffect } = React;
-    // --- LIVE DATABASE SYNC ---
-const artistsRef = database.ref('artists');
+    const database = firebase.database();
+    const { useState, useEffect, useRef } = React;
 
-// Listen to Firebase for real-time updates
-artistsRef.on('value', (snapshot) => {
-  const data = snapshot.val();
-  if (data) {
-    // Loop through the data from Firebase and update our local ARTISTS array live
-    data.forEach((firebaseArtist, index) => {
-      if (ARTISTS[index]) {
-        ARTISTS[index].wins = firebaseArtist.wins || 0;
+    // --- LIVE DATABASE SYNC ---
+    const artistsRef = database.ref('artists');
+
+    artistsRef.on('value', (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        data.forEach((firebaseArtist, index) => {
+          if (ARTISTS[index]) {
+            ARTISTS[index].wins = firebaseArtist.wins || 0;
+          }
+        });
+      } else {
+        artistsRef.set(ARTISTS);
       }
     });
-  } else {
-    // If the database is completely empty (like right now), seed it with your initial list
-    artistsRef.set(ARTISTS);
-  }
-});
-// --- HOMEPAGE THEME SONG COMPONENT ---
-const ThemeAudio = () => {
-  const [isPlaying, setIsPlaying] = React.useState(false);
-  const audioRef = React.useRef(new Audio('./themesong.mp3'));
 
-  React.useEffect(() => {
-    audioRef.current.loop = true;
-    audioRef.current.volume = 0.4;
-  }, []);
+    // --- HOMEPAGE THEME SONG COMPONENT ---
+    const ThemeAudio = () => {
+      const [isPlaying, setIsPlaying] = useState(false);
+      const audioRef = useRef(new Audio('./themesong.mp3'));
 
-  const togglePlay = () => {
-    if (isPlaying) {
-      audioRef.current.pause();
-    } else {
-      audioRef.current.play().catch(err => console.log(err));
-    }
-    setIsPlaying(!isPlaying);
-  };
+      useEffect(() => {
+        audioRef.current.loop = true;
+        audioRef.current.volume = 0.4;
+      }, []);
 
-  return (
-    <button 
-      onClick={togglePlay}
-      style={{
-        background: isPlaying ? '#ff2244' : '#111111',
-        color: '#ffffff',
-        border: '1px solid #ff2244',
-        padding: '6px 12px',
-        borderRadius: '4px',
-        cursor: 'pointer',
-        fontFamily: 'sans-serif',
-        fontSize: '0.8rem',
-        fontWeight: 'bold',
-        marginLeft: '15px'
-      }}
-    >
-      {isPlaying ? '⏸ PAUSE MUSIC' : '▶ PLAY MUSIC'}
-    </button>
-  );
-};
-    // ── INLINE ICONS (no lucide dependency) ──────────────────────────────────
+      const togglePlay = () => {
+        if (isPlaying) {
+          audioRef.current.pause();
+        } else {
+          audioRef.current.play().catch(err => console.log("Audio playback notice:", err));
+        }
+        setIsPlaying(!isPlaying);
+      };
+
+      return (
+        <button 
+          onClick={togglePlay}
+          style={{
+            background: isPlaying ? '#ff2244' : '#111111',
+            color: '#ffffff',
+            border: '1px solid #ff2244',
+            padding: '6px 12px',
+            borderRadius: '4px',
+            cursor: 'pointer',
+            fontFamily: 'sans-serif',
+            fontSize: '0.8rem',
+            fontWeight: 'bold',
+            marginLeft: '15px'
+          }}
+        >
+          {isPlaying ? '⏸ PAUSE MUSIC' : '▶ PLAY MUSIC'}
+        </button>
+      );
+    };
+
+    // ── INLINE ICONS ──────────────────────────────────────────────────────────
     const Icon = ({ d, size = 16, color = "currentColor", style = {} }) => (
       <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
         stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
@@ -166,16 +172,17 @@ const ThemeAudio = () => {
     const IconDollar     = ({size,color}) => <Icon size={size} color={color} d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>;
     const IconStar       = ({size,color}) => <Icon size={size} color={color} d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>;
     const IconExtLink    = ({size,color}) => <Icon size={size} color={color} d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/>;
-    const IconGavel      = ({size,color}) => <Icon size={size} color={color} d="M14.5 2.5l7 7-14 14-7-7 14-14zM2 22l4-4"/>;
     const IconUsers      = ({size,color}) => <Icon size={size} color={color} d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75M9 7a4 4 0 100 8 4 4 0 000-8z"/>;
     const IconChevron    = ({size,color,style}) => <Icon size={size} color={color} style={style} d="M9 18l6-6-6-6"/>;
     const IconMic        = ({size,color}) => <Icon size={size} color={color} d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3zM19 10v2a7 7 0 01-14 0v-2M12 19v4M8 23h8"/>;
     const IconTag        = ({size,color}) => <Icon size={size} color={color} d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82zM7 7h.01"/>;
+    const IconCamera     = ({size,color}) => <Icon size={size} color={color} d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2zM12 17a4 4 0 100-8 4 4 0 000 8z"/>;
+    const IconClose      = ({size,color}) => <Icon size={size} color={color} d="M18 6L6 18M6 6l12 12"/>;
+    const IconUpload     = ({size,color}) => <Icon size={size} color={color} d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/>;
 
-    // ── DATA ─────────────────────────────────────────────────────────────────
     const ARTISTS = [
       { id:1, name:"Luke",    avatar:"LE", medium:"PinStripe on wood",   status:"PAINTING",   wins:0, color:"#ff6b35", bio:"PinStripe.", tags:["Acrylic","Mixed Media","Texture"] },
-      { id:2, name:"Miles",    avatar:"MF", medium:"Acrylic",        status:"PAINTING",   wins:0, color:"#4ecdc4", bio:"Surreal.", tags:["Watercolor","Ink","Illustrative"] },
+      { id:2, name:"Miles",   avatar:"MF", medium:"Acrylic",        status:"PAINTING",   wins:0, color:"#4ecdc4", bio:"Surreal.", tags:["Watercolor","Ink","Illustrative"] },
       { id:3, name:"FAWN",   avatar:"J", medium:"Acrylic",       status:"PAINTING",   wins:0, color:"#ffd700", bio:"Acrylic.", tags:["Charcoal","Marker","Street"] },
       { id:4, name:"Erin",   avatar:"EH", medium:"Acrylic",     status:"PAINTING",   wins:0, color:"#ffd700", bio:"Acrylic.", tags:["Acrylic","Gold Leaf","Gestural"] },
       { id:5, name:"Oliver",    avatar:"OF", medium:"Acrylic", status:"PAINTING",   wins:0, color:"#ff2244", bio:"Acrylic.", tags:["Ballpoint","Acrylic","Detail"] },
@@ -186,10 +193,10 @@ const ThemeAudio = () => {
       all:  [
         {rank:1,name:"TBD",  wins:0,battles:0,rate:0},
         {rank:2,name:"TBD",   wins:0,battles:0,rate:0},
-        {rank:3,name:"TBD",   wins:0,battles:0, rate:0},
-        {rank:4,name:"TBD",   wins:0,battles:0, rate:0},
-        {rank:5,name:"TBD",  wins:0,battles:0, rate:0},
-        {rank:6,name:"TBD",wins:0,battles:0, rate:0},
+        {rank:3,name:"TBD",   wins:0,battles:0,rate:0},
+        {rank:4,name:"TBD",   wins:0,battles:0,rate:0},
+        {rank:5,name:"TBD",  wins:0,battles:0,rate:0},
+        {rank:6,name:"TBD",wins:0,battles:0,rate:0},
       ],
       month:[
         {rank:1,name:"TBD",   wins:0,battles:0,rate:0},
@@ -210,30 +217,40 @@ const ThemeAudio = () => {
     };
 
     const WEEKLY_CLASSES = [
-  { id: 1, theme: "Graffiti Foundations: Tags & Handstyles", date: "6/13/26", entryFee: 20, participants: 0, max: 10, revealed: true, infoLink: "https://jawsatak47.wixsite.com/jaws/copy-of-service-1" },
-  { id: 2, theme: "Graffiti Foundations: Bubble Letters", date: "6/20/26", entryFee: 20, participants: 0, max: 10, revealed: true, infoLink: "https://jawsatak47.wixsite.com/jaws/copy-of-service-1" },
-  { id: 3, theme: "Graffiti Foundations: Letter Structure", date: "6/27/26", entryFee: 20, participants: 0, max: 10, revealed: true, infoLink: "https://jawsatak47.wixsite.com/jaws/copy-of-service-1" },
-  { id: 4, theme: "Graffiti Foundations: Throw-Ups", date: "7/04/26", entryFee: 20, participants: 0, max: 10, revealed: true, infoLink: "https://jawsatak47.wixsite.com/jaws/copy-of-service-1" },
-  { id: 5, theme: "Wildstyle Development: Flow", date: "7/11/26", entryFee: 20, participants: 0, max: 10, revealed: true, infoLink: "https://jawsatak47.wixsite.com/jaws/copy-of-service-1" },
-  { id: 6, theme: "Wildstyle Development: Complexity vs Readability", date: "7/18/26", entryFee: 20, participants: 0, max: 10, revealed: true, infoLink: "https://jawsatak47.wixsite.com/jaws/copy-of-service-1" },
-  { id: 7, theme: "Wildstyle Development: Sketch Development", date: "7/25/26", entryFee: 20, participants: 0, max: 10, revealed: true, infoLink: "https://jawsatak47.wixsite.com/jaws/copy-of-service-1" },
-];
-
-    const AUCTION_ITEMS = [
-      {id:1,title:"Luke",   artist:"Luke",    currentBid:0,bids:0, startBid:100},
-      {id:2,title:"Erin",     artist:"Erin H",    currentBid:0,bids:0, startBid:100},
-      {id:3,title:"Oliver",      artist:"Oliver",   currentBid:0,bids:0, startBid:100},
-      {id:4,title:"Oliver Jr",       artist:"Oliver Jr",   currentBid:0,bids:0,startBid:100},
-      {id:5,title:"Miles Frode", artist:"Miles Frode",    currentBid:0,bids:0, startBid:100},
-      {id:6,title:"FAWN",   artist:"FAWN", currentBid:0, bids:0, startBid:100},
+      { id: 1, theme: "Graffiti Foundations: Tags & Handstyles", date: "6/13/26", entryFee: 20, participants: 0, max: 10, revealed: true, infoLink: "https://jawsatak47.wixsite.com/jaws/copy-of-service-1" },
+      { id: 2, theme: "Graffiti Foundations: Bubble Letters", date: "6/20/26", entryFee: 20, participants: 0, max: 10, revealed: true, infoLink: "https://jawsatak47.wixsite.com/jaws/copy-of-service-1" },
+      { id: 3, theme: "Graffiti Foundations: Letter Structure", date: "6/27/26", entryFee: 20, participants: 0, max: 10, revealed: true, infoLink: "https://jawsatak47.wixsite.com/jaws/copy-of-service-1" },
+      { id: 4, theme: "Graffiti Foundations: Throw-Ups", date: "7/04/26", entryFee: 20, participants: 0, max: 10, revealed: true, infoLink: "https://jawsatak47.wixsite.com/jaws/copy-of-service-1" },
+      { id: 5, theme: "Wildstyle Development: Flow", date: "7/11/26", entryFee: 20, participants: 0, max: 10, revealed: true, infoLink: "https://jawsatak47.wixsite.com/jaws/copy-of-service-1" },
+      { id: 6, theme: "Wildstyle Development: Complexity vs Readability", date: "7/18/26", entryFee: 20, participants: 0, max: 10, revealed: true, infoLink: "https://jawsatak47.wixsite.com/jaws/copy-of-service-1" },
+      { id: 7, theme: "Wildstyle Development: Sketch Development", date: "7/25/26", entryFee: 20, participants: 0, max: 10, revealed: true, infoLink: "https://jawsatak47.wixsite.com/jaws/copy-of-service-1" },
     ];
 
+    // EDIT DIRECTLY HERE: Replace URLs with your actual photo links (e.g., './photos/myphoto.jpg' or 'https://...')
+    const EVENT_PHOTOS = Array.from({ length: 52 }, (_, index) => {
+      const photoNum = index + 1;
+      const categories = ["LIVE BATTLES", "ARTWORKS", "CROWD & VENUE", "HIGHLIGHTS"];
+      const category = categories[index % categories.length];
+      const artist = ARTISTS[index % ARTISTS.length].name;
+      
+      return {
+        id: photoNum,
+        title: `Canvas Wars Action #${photoNum}`,
+        artist: artist,
+        category: category,
+        // Replace this url string with your image file paths or uploaded image URLs
+        url: `https://picsum.photos/seed/canvaswars${photoNum}/800/600`,
+        caption: `Live speed painting session featuring ${artist} during Canvas Wars event.`,
+        date: "June 2026"
+      };
+    });
+
     const TABS = [
+      {id:"photos",  label:"📸 EVENT PHOTOS"},
       {id:"live",    label:"🎨 LIVE BATTLE"},
       {id:"weekly",  label:"⚡ WEEKLY CLASSES"},
       {id:"leaders", label:"🏆 LEADERBOARD"},
       {id:"artists", label:"👤 ARTISTS"},
-      {id:"auction", label:"🔇 SILENT AUCTION"},
       {id:"sponsors",label:"💰 SPONSORS"},
     ];
 
@@ -304,38 +321,240 @@ const ThemeAudio = () => {
       );
     }
 
-    // ── LIVE BATTLE ───────────────────────────────────────────────────────────
+    function EventPhotos() {
+      const [filter, setFilter] = useState("ALL");
+      const [photosList, setPhotosList] = useState(EVENT_PHOTOS);
+      const [activeLightboxIndex, setActiveLightboxIndex] = useState(null);
+      const [showUploadModal, setShowUploadModal] = useState(false);
+
+      const categories = ["ALL", "LIVE BATTLES", "ARTWORKS", "CROWD & VENUE", "HIGHLIGHTS"];
+
+      const filteredPhotos = filter === "ALL" 
+        ? photosList 
+        : photosList.filter(p => p.category === filter);
+
+      const openLightbox = (index) => setActiveLightboxIndex(index);
+      const closeLightbox = () => setActiveLightboxIndex(null);
+
+      const prevPhoto = (e) => {
+        e.stopPropagation();
+        setActiveLightboxIndex((prev) => (prev === 0 ? filteredPhotos.length - 1 : prev - 1));
+      };
+
+      const nextPhoto = (e) => {
+        e.stopPropagation();
+        setActiveLightboxIndex((prev) => (prev === filteredPhotos.length - 1 ? 0 : prev + 1));
+      };
+
+      // Handle local browser preview upload
+      const handleFileUpload = (e) => {
+        const files = Array.from(e.target.files);
+        if (files.length === 0) return;
+
+        const newPhotos = files.map((file, i) => ({
+          id: Date.now() + i,
+          title: file.name.split('.')[0] || "Uploaded Event Photo",
+          artist: "Live Event",
+          category: "HIGHLIGHTS",
+          url: URL.createObjectURL(file),
+          caption: "Uploaded photo preview for local session.",
+          date: "Just uploaded"
+        }));
+
+        setPhotosList(prev => [...newPhotos, ...prev]);
+        setShowUploadModal(false);
+      };
+
+      return (
+        <div>
+          <SectionHead 
+            icon={<IconCamera size={26} color="#ff2244"/>} 
+            title="EVENT GALLERY" 
+            sub={`Captured moments from Canvas Wars · ${photosList.length} Photos total`} 
+          />
+
+          {/* Controls Bar */}
+          <div style={{display:"flex",flexWrap:"wrap",justifyContent:"space-between",alignItems:"center",gap:"1rem",marginBottom:"1.5rem"}}>
+            {/* Category Filter Pills */}
+            <div style={{display:"flex",gap:".5rem",overflowX:"auto",paddingBottom:".2rem"}}>
+              {categories.map(cat => (
+                <button
+                  key={cat}
+                  className={`tab-btn ${filter === cat ? "tab-active" : ""}`}
+                  style={{border:"1px solid #1f1f1f",borderRadius:"4px",fontSize:".85rem",padding:".4rem .9rem"}}
+                  onClick={() => setFilter(cat)}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+
+            {/* Upload Action Button */}
+            <button 
+              className="btn-main"
+              style={{display:"flex",alignItems:"center",gap:".5rem",fontSize:".9rem"}}
+              onClick={() => setShowUploadModal(true)}
+            >
+              <IconUpload size={16}/> HOW TO ADD / UPLOAD PHOTOS
+            </button>
+          </div>
+
+          {/* Photos Grid */}
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill, minmax(240px, 1fr))",gap:"1rem"}}>
+            {filteredPhotos.map((photo, index) => (
+              <div 
+                key={photo.id} 
+                className="photo-card fade-up"
+                style={{animationDelay: `${(index % 12) * 0.04}s`}}
+                onClick={() => openLightbox(index)}
+              >
+                <div style={{width:"100%",paddingTop:"75%",position:"relative",background:"#080808"}}>
+                  <img 
+                    src={photo.url} 
+                    alt={photo.title} 
+                    loading="lazy"
+                    style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover"}}
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = `https://placehold.co/800x600/111111/ff2244?text=Canvas+Wars+Photo+${photo.id}`;
+                    }}
+                  />
+                </div>
+                <div className="overlay">
+                  <span className="barlow" style={{color:"#ffd700",fontSize:".7rem",fontWeight:700,letterSpacing:".1em",textTransform:"uppercase"}}>
+                    {photo.category} · {photo.artist}
+                  </span>
+                  <div className="bebas" style={{color:"#fff",fontSize:"1.1rem",lineHeight:1.1,marginTop:2}}>
+                    {photo.title}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Lightbox Modal */}
+          {activeLightboxIndex !== null && filteredPhotos[activeLightboxIndex] && (
+            <div 
+              style={{
+                position:"fixed",inset:0,zIndex:10000,background:"rgba(0,0,0,0.92)",
+                backdropFilter:"blur(8px)",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"1rem"
+              }}
+              onClick={closeLightbox}
+            >
+              <button 
+                onClick={closeLightbox} 
+                style={{position:"absolute",top:"20px",right:"20px",background:"none",border:"none",color:"#fff",cursor:"pointer"}}
+              >
+                <IconClose size={32}/>
+              </button>
+
+              <button 
+                onClick={prevPhoto}
+                style={{position:"absolute",left:"15px",top:"50%",transform:"translateY(-50%)",background:"rgba(0,0,0,0.6)",border:"1px solid #333",color:"#fff",padding:".8rem",borderRadius:"50%",cursor:"pointer"}}
+              >
+                <IconChevron size={24} style={{transform:"rotate(180deg)"}}/>
+              </button>
+
+              <button 
+                onClick={nextPhoto}
+                style={{position:"absolute",right:"15px",top:"50%",transform:"translateY(-50%)",background:"rgba(0,0,0,0.6)",border:"1px solid #333",color:"#fff",padding:".8rem",borderRadius:"50%",cursor:"pointer"}}
+              >
+                <IconChevron size={24}/>
+              </button>
+
+              <div 
+                style={{maxWidth:"900px",width:"100%",maxHeight:"80vh",display:"flex",flexDirection:"column",alignItems:"center"}}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <img 
+                  src={filteredPhotos[activeLightboxIndex].url} 
+                  alt={filteredPhotos[activeLightboxIndex].title} 
+                  style={{maxWidth:"100%",maxHeight:"70vh",objectFit:"contain",borderRadius:"4px",border:"1px solid #333"}}
+                />
+                <div style={{marginTop:"1rem",textAlign:"center",color:"#fff"}}>
+                  <div className="bebas" style={{fontSize:"1.5rem",color:"#ff2244"}}>
+                    {filteredPhotos[activeLightboxIndex].title}
+                  </div>
+                  <div className="barlow" style={{color:"#aaa",fontSize:".9rem"}}>
+                    {filteredPhotos[activeLightboxIndex].caption}
+                  </div>
+                  <div className="barlow" style={{color:"#555",fontSize:".75rem",marginTop:4}}>
+                    Photo {activeLightboxIndex + 1} of {filteredPhotos.length}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Upload Notice / Local Preview Modal */}
+          {showUploadModal && (
+            <div 
+              style={{
+                position:"fixed",inset:0,zIndex:10000,background:"rgba(0,0,0,0.85)",
+                display:"flex",alignItems:"center",justifyContent:"center",padding:"1rem"
+              }}
+              onClick={() => setShowUploadModal(false)}
+            >
+              <div 
+                style={{background:"#111",border:"1px solid #ff224440",borderRadius:"6px",padding:"2rem",maxWidth:"550px",width:"100%"}}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"1rem"}}>
+                  <div className="bebas" style={{fontSize:"1.6rem",color:"#ff2244"}}>UPLOAD / ADD PHOTOS</div>
+                  <button onClick={() => setShowUploadModal(false)} style={{background:"none",border:"none",color:"#fff",cursor:"pointer"}}>
+                    <IconClose size={20}/>
+                  </button>
+                </div>
+
+                <div className="barlow" style={{color:"#ccc",fontSize:".95rem",lineHeight:1.5,marginBottom:"1.2rem"}}>
+                  <strong>Option 1: Permanent Update (In Code)</strong><br/>
+                  Open this HTML file in any editor and replace the image URLs in the <code>EVENT_PHOTOS</code> array (around line ~160 in the code). You can use local files (e.g., <code>./photos/photo1.jpg</code>) or direct online image URLs.
+                </div>
+
+                <div className="barlow" style={{color:"#ccc",fontSize:".95rem",lineHeight:1.5,marginBottom:"1.5rem"}}>
+                  <strong>Option 2: Preview Local Files Now</strong><br/>
+                  Select photos from your device to immediately render them in this browser gallery session.
+                </div>
+
+                <label className="btn-main" style={{display:"inline-block",textAlign:"center",width:"100%",cursor:"pointer"}}>
+                  📂 SELECT LOCAL PHOTOS TO PREVIEW
+                  <input type="file" multiple accept="image/*" onChange={handleFileUpload} style={{display:"none"}} />
+                </label>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
     function LiveBattle({ votes, setVotes, votedFor, setVotedFor }) {
-      // Listen to the live votes node in Firebase
-  React.useEffect(() => {
-    const votesRef = database.ref('votes');
-    votesRef.on('value', (snapshot) => {
-      const data = snapshot.val();
-      if (data) {
-        setVotes(data);
-      }
-    });
-    return () => votesRef.off();
-  }, []);
+      useEffect(() => {
+        const votesRef = database.ref('votes');
+        votesRef.on('value', (snapshot) => {
+          const data = snapshot.val();
+          if (data) {
+            setVotes(data);
+          }
+        });
+        return () => votesRef.off();
+      }, []);
+
       const cd = useCountdown("2026-06-06T20:00:00");
       const totalVotes = Object.values(votes).reduce((a,b)=>a+b,0) || 1;
 
       const handleVote = (id) => {
-    if (votedFor !== null) return;
+        if (votedFor !== null) return;
 
-    // 1. Tell Firebase to increase this specific artist's vote id count by 1
-    const voteRef = database.ref(`votes/${id}`);
-    voteRef.transaction((currentVotes) => {
-      return (currentVotes || 0) + 1;
-    });
+        const voteRef = database.ref(`votes/${id}`);
+        voteRef.transaction((currentVotes) => {
+          return (currentVotes || 0) + 1;
+        });
 
-    // 2. Keep this line so the local browser remembers they already clicked vote
-    setVotedFor(id);
-  };
+        setVotedFor(id);
+      };
 
       return (
         <div>
-          {/* Header strip */}
           <div style={{background:"linear-gradient(90deg,#ff224415,#ff224405,transparent)",border:"1px solid #ff224430",borderRadius:4,padding:"1rem 1.5rem",marginBottom:"2rem",display:"flex",flexWrap:"wrap",gap:"1rem",alignItems:"center",justifyContent:"space-between"}}>
             <div>
               <div className="bebas" style={{color:"#ff2244",fontSize:".85rem",letterSpacing:".15em"}}>● LIVE NOW — CANVAS WARS 2026</div>
@@ -355,7 +574,6 @@ const ThemeAudio = () => {
             </div>
           </div>
 
-          {/* Judging split */}
           <div style={{display:"flex",gap:".75rem",marginBottom:"1.5rem",flexWrap:"wrap"}}>
             {[["70%","PANEL JUDGES","#ff2244"],["30%","AUDIENCE VOTE","#4ecdc4"]].map(([pct,lbl,clr]) => (
               <div key={lbl} style={{background:"#111",border:"1px solid #1f1f1f",borderRadius:4,padding:".6rem 1.2rem",display:"flex",alignItems:"center",gap:".7rem"}}>
@@ -371,7 +589,6 @@ const ThemeAudio = () => {
 
           <SectionHead title="COMPETING ARTISTS"/>
 
-          {/* Artist grid */}
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(270px,1fr))",gap:"1rem"}}>
             {ARTISTS.map((a,i) => {
               const v = votes[a.id] || 0;
@@ -411,7 +628,6 @@ const ThemeAudio = () => {
             })}
           </div>
 
-          {/* Event info */}
           <div style={{marginTop:"2rem",background:"#111",border:"1px solid #1e1e1e",borderRadius:4,padding:"1rem 1.5rem",display:"flex",flexWrap:"wrap",gap:".75rem 2rem"}}>
             {[
               ["CANVAS SIZE","24\" × 24\" Primed Canvas / Birch Panel"],
@@ -429,68 +645,67 @@ const ThemeAudio = () => {
       );
     }
 
-   // --- WEEKLY CLASSES ---
-function WeeklyClasses() {
-  return (
-    <div>
-      <SectionHead icon={<IconZap size={22} color="#ff2244"/>} title="WEEKLY CLASSES" sub="Entry fee: $20 per class · Square checkout · email after received" />
-      <div style={{display:"grid",gap:"1rem"}}>
-        {WEEKLY_CLASSES.map((b,i) => {
-          const isLive = b.status==="LIVE";
-          const pct = Math.round((b.participants/b.max)*100);
-          return (
-            <div key={b.id} className="fade-up" style={{background:"#111",border:`1px solid ${isLive?"#ff2244":"#1f1f1f"}`,borderRadius:"6px",padding:"1.5rem"}}>
-              <div style={{display:"flex",flexWrap:"wrap",justifyContent: "space-between",alignItems:"flex-start",gap:"1rem"}}>
-                <div>
-                  <div style={{display:"flex",gap:".5rem",alignItems:"center",marginBottom:".4rem"}}>
-                    {isLive && <span className="barlow glow-red" style={{fontSize:".65rem",fontWeight:700,letterSpacing:".15rem",color:"#ff2244"}}>LIVE</span>}
-                    {!isLive && <span className="barlow" style={{fontSize:".65rem",fontWeight:700,letterSpacing:".15rem",color:"#555"}}>UPCOMING</span>}
-                    <span className="barlow" style={{color:"#444",fontSize:".75rem"}}>CLASS #{b.id}</span>
+    function WeeklyClasses() {
+      return (
+        <div>
+          <SectionHead icon={<IconZap size={22} color="#ff2244"/>} title="WEEKLY CLASSES" sub="Entry fee: $20 per class · Square checkout · email after received" />
+          <div style={{display:"grid",gap:"1rem"}}>
+            {WEEKLY_CLASSES.map((b) => {
+              const isLive = b.status==="LIVE";
+              const pct = Math.round((b.participants/b.max)*100);
+              return (
+                <div key={b.id} className="fade-up" style={{background:"#111",border:`1px solid ${isLive?"#ff2244":"#1f1f1f"}`,borderRadius:"6px",padding:"1.5rem"}}>
+                  <div style={{display:"flex",flexWrap:"wrap",justifyContent: "space-between",alignItems:"flex-start",gap:"1rem"}}>
+                    <div>
+                      <div style={{display:"flex",gap:".5rem",alignItems:"center",marginBottom:".4rem"}}>
+                        {isLive && <span className="barlow glow-red" style={{fontSize:".65rem",fontWeight:700,letterSpacing:".15rem",color:"#ff2244"}}>LIVE</span>}
+                        {!isLive && <span className="barlow" style={{fontSize:".65rem",fontWeight:700,letterSpacing:".15rem",color:"#555"}}>UPCOMING</span>}
+                        <span className="barlow" style={{color:"#444",fontSize:".75rem"}}>CLASS #{b.id}</span>
+                      </div>
+                      <div className="bebas" style={{fontSize:"1.5rem",color:"#fff",letterSpacing:".04rem"}}>
+                        {b.theme}
+                      </div>
+                      <div className="barlow" style={{color:"#555",fontSize:".8rem",marginTop:2}}>Fee: <span style={{color:"#888"}}>${b.entryFee}</span></div>
+                    </div>
+                    
+                    <div style={{textAlign:"right"}}>
+                      <div className="barlow" style={{color:"#555",fontSize:".65rem",letterSpacing:".1rem",fontWeight:700,marginBottom:2}}>DATE</div>
+                      <div className="bebas" style={{fontSize:"1.6rem",color:isLive?"#ff2244":"#666",letterSpacing:".02rem"}}>
+                        {b.date}
+                      </div>
+                    </div>
                   </div>
-                  <div className="bebas" style={{fontSize:"1.5rem",color:"#fff",letterSpacing:".04rem"}}>
-                    {b.theme}
-                  </div>
-                  <div className="barlow" style={{color:"#555",fontSize:".8rem",marginTop:2}}>Fee: <span style={{color:"#888"}}>${b.entryFee}</span></div>
-                </div>
-                
-                <div style={{textAlign:"right"}}>
-                  <div className="barlow" style={{color:"#555",fontSize:".65rem",letterSpacing:".1rem",fontWeight:700,marginBottom:2}}>DATE</div>
-                  <div className="bebas" style={{fontSize:"1.6rem",color:isLive?"#ff2244":"#666",letterSpacing:".02rem"}}>
-                    {b.date}
-                  </div>
-                </div>
-              </div>
 
-              <div style={{marginTop:"1rem"}}>
-                <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}>
-                  <div className="barlow" style={{color:"#444",fontSize:".7rem",fontWeight:700,letterSpacing:".1rem"}}>SLOTS FILLED</div>
-                  <div className="barlow" style={{color:"#666",fontSize:".75rem"}}>{b.participants} / {b.max}</div>
-                </div>
-                <div style={{background:"#1a1a1a",height:4,borderRadius:2,overflow:"hidden"}}>
-                  <div style={{background:isLive?"#ff2244":"#333",width:`${pct}%`,height:"100%",transition:"width .3s"}} />
-                </div>
-              </div>
+                  <div style={{marginTop:"1rem"}}>
+                    <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}>
+                      <div className="barlow" style={{color:"#444",fontSize:".7rem",fontWeight:700,letterSpacing:".1rem"}}>SLOTS FILLED</div>
+                      <div className="barlow" style={{color:"#666",fontSize:".75rem"}}>{b.participants} / {b.max}</div>
+                    </div>
+                    <div style={{background:"#1a1a1a",height:4,borderRadius:2,overflow:"hidden"}}>
+                      <div style={{background:isLive?"#ff2244":"#333",width:`${pct}%`,height:"100%",transition:"width .3s"}} />
+                    </div>
+                  </div>
 
-              <div style={{display:"flex",gap:".5rem",marginTop:"1.5rem"}}>
-                <a href="https://square.link/u/uMf9gish" target="_blank" rel="noreferrer" style={{textDecoration:"none"}}>
-                  <button className="sponsor-cta" style={{display:"flex",alignItems:"center",gap:".4rem",fontSize:".9rem"}}>
-                    ENTER CLASS → PAY VIA SQUARE <IconExtLink size={13}/>
-                  </button>
-                </a>
-                <a href={b.infoLink || "#"} target="_blank" rel="noreferrer" style={{textDecoration:"none"}}>
-                  <button style={{fontFamily:"'Barlow Condensed',sans-serif",fontWeight:700,fontSize:".85rem",padding:".6rem 1.2rem",background:"transparent",color:"#888",border:"1px solid #333",borderRadius:"4px",cursor:"pointer",textTransform:"uppercase"}}>
-                    CLASS INFO
-                  </button>
-                </a>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-    // ── LEADERBOARD ───────────────────────────────────────────────────────────
+                  <div style={{display:"flex",gap:".5rem",marginTop:"1.5rem"}}>
+                    <a href="https://square.link/u/uMf9gish" target="_blank" rel="noreferrer" style={{textDecoration:"none"}}>
+                      <button className="sponsor-cta" style={{display:"flex",alignItems:"center",gap:".4rem",fontSize:".9rem"}}>
+                        ENTER CLASS → PAY VIA SQUARE <IconExtLink size={13}/>
+                      </button>
+                    </a>
+                    <a href={b.infoLink || "#"} target="_blank" rel="noreferrer" style={{textDecoration:"none"}}>
+                      <button style={{fontFamily:"'Barlow Condensed',sans-serif",fontWeight:700,fontSize:".85rem",padding:".6rem 1.2rem",background:"transparent",color:"#888",border:"1px solid #333",borderRadius:"4px",cursor:"pointer",textTransform:"uppercase"}}>
+                        CLASS INFO
+                      </button>
+                    </a>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      );
+    }
+
     function Leaderboard() {
       const [filter, setFilter] = useState("all");
       const data = LEADERBOARD_DATA[filter];
@@ -526,39 +741,11 @@ function WeeklyClasses() {
       );
     }
 
-    // ── ARTIST PROFILES ───────────────────────────────────────────────────────
     function ArtistProfiles() {
       const [selected, setSelected] = useState(null);
       return (
         <div>
           <SectionHead icon={<IconStar size={22} color="#ff2244"/>} title="ARTIST ROSTER" sub="Canvas Wars 2026 · 6 Selected Competitors"/>
-
-          {/* Featured */}
-          {(() => {
-            const feat = ARTISTS.find(x=>x.featured);
-            if (!feat) return null;
-            return (
-              <div style={{background:"linear-gradient(135deg,#ffd70008,#1a1408)",border:"1px solid #ffd70030",borderRadius:4,padding:"1.25rem 1.5rem",marginBottom:"1.5rem",display:"flex",flexWrap:"wrap",gap:"1rem",alignItems:"center"}} className="glow-gold">
-                <div style={{display:"flex",alignItems:"center",gap:"1rem"}}>
-                  <div style={{width:64,height:64,borderRadius:4,background:"linear-gradient(135deg,#ffd70033,#ffd70011)",border:"1px solid #ffd70055",display:"flex",alignItems:"center",justifyContent:"center"}}>
-                    <span className="bebas" style={{fontSize:"1.4rem",color:"#ffd700"}}>{feat.avatar}</span>
-                  </div>
-                  <div>
-                    <div className="barlow" style={{color:"#ffd700",fontSize:".65rem",fontWeight:700,letterSpacing:".15em",marginBottom:2}}>★ FEATURED ARTIST · SPONSOR SLOT</div>
-                    <div className="bebas" style={{fontSize:"1.6rem",color:"#fff"}}>{feat.name}</div>
-                    <div className="barlow" style={{color:"#888",fontSize:".8rem"}}>{feat.medium}</div>
-                  </div>
-                </div>
-                <div style={{flex:1,minWidth:200}}>
-                  <div className="barlow" style={{color:"#666",fontSize:".85rem",lineHeight:1.5}}>{feat.bio}</div>
-                </div>
-                <div style={{display:"flex",gap:".6rem",flexWrap:"wrap"}}>
-                  <a href="https://jawsgraffiti.square.site/" style={{textDecoration:"none"}}><button className="bid-btn" style={{borderColor:"#ffd700",color:"#ffd700"}}>VIEW MERCH TABLE</button></a>
-                  <a href="#" style={{textDecoration:"none"}}><button className="bid-btn" style={{borderColor:"#555",color:"#666"}}>SOCIAL ↗</button></a>
-                </div>
-              </div>
-            );
-          })()}
 
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(250px,1fr))",gap:"1rem"}}>
             {ARTISTS.map((a,i) => (
@@ -597,95 +784,6 @@ function WeeklyClasses() {
       );
     }
 
-    // ── SILENT AUCTION ────────────────────────────────────────────────────────
-    function SilentAuction() {
-      const [bids, setBids] = useState(() => {
-        const init = {};
-        AUCTION_ITEMS.forEach(a=>{init[a.id]=a.currentBid;});
-        return init;
-      });
-      const [bidCounts, setBidCounts] = useState(() => {
-        const init = {};
-        AUCTION_ITEMS.forEach(a=>{init[a.id]=a.bids;});
-        return init;
-      });
-      const [lastBid, setLastBid] = useState(null);
-
-      const placeBid = (id) => {
-        setBids(b=>({...b,[id]:b[id]+10}));
-        setBidCounts(c=>({...c,[id]:c[id]+1}));
-        setLastBid(id);
-        setTimeout(()=>setLastBid(null),800);
-      };
-
-      const auctionCd = useCountdown("2026-06-06T22:00:00Z");
-      const liveCd = useCountdown("2026-06-07T01:30:00Z");
-
-      return (
-        <div>
-          <SectionHead icon={<IconGavel size={22} color="#ff2244"/>} title="SILENT AUCTION" sub="Each 24×24 canvas by a competing artist · Revenue split: Artist 70% / Event 30%"/>
-
-          <div style={{display:"flex",flexWrap:"wrap",gap:"1rem",marginBottom:"1.5rem"}}>
-            {[["SILENT AUCTION","11:00 AM – 5:00 PM",auctionCd,"#ff2244"],["LIVE AUCTION","5:00 PM – 6:30 PM",liveCd,"#ffd700"]].map(([label,time,cd,clr])=>(
-              <div key={label} style={{flex:1,minWidth:200,background:"#111",border:`1px solid ${clr}22`,borderRadius:4,padding:"1rem 1.25rem"}}>
-                <div className="barlow" style={{color:"#555",fontSize:".65rem",fontWeight:700,letterSpacing:".12em"}}>{label}</div>
-                <div className="bebas" style={{color:clr,fontSize:"1.1rem",marginTop:2}}>{time}</div>
-                <div style={{display:"flex",gap:".5rem",alignItems:"center",marginTop:6}}>
-                  <IconClock size={11} color="#555"/>
-                  <div className="barlow" style={{color:"#666",fontSize:".75rem"}}>{cd.d}d {cd.h}h {cd.m}m remaining</div>
-                </div>
-              </div>
-            ))}
-            <div style={{flex:1,minWidth:200,background:"#111",border:"1px solid #1e1e1e",borderRadius:4,padding:"1rem 1.25rem",display:"flex",flexDirection:"column",justifyContent:"center"}}>
-              <div className="barlow" style={{color:"#555",fontSize:".65rem",fontWeight:700,letterSpacing:".12em"}}>REVENUE SPLIT</div>
-              <div style={{display:"flex",gap:".75rem",marginTop:6,alignItems:"center"}}>
-                <div className="bebas" style={{fontSize:"2rem",color:"#4ecdc4",lineHeight:1}}>70%</div>
-                <div className="barlow" style={{color:"#666",fontSize:".75rem",lineHeight:1.3}}>TO ARTIST</div>
-                <div className="bebas" style={{fontSize:"1.2rem",color:"#333",lineHeight:1}}>+</div>
-                <div className="bebas" style={{fontSize:"2rem",color:"#ff2244",lineHeight:1}}>30%</div>
-                <div className="barlow" style={{color:"#666",fontSize:".75rem",lineHeight:1.3}}>TO EVENT</div>
-              </div>
-            </div>
-          </div>
-
-          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))",gap:"1rem"}}>
-            {AUCTION_ITEMS.map((item,i)=>{
-              const isFlash = lastBid===item.id;
-              const artistColor = ARTISTS.find(a=>a.name===item.artist)?.color||"#ff2244";
-              const artistAvatar = ARTISTS.find(a=>a.name===item.artist)?.avatar||"??";
-              return (
-                <div key={item.id} className="artist-card fade-up" style={{padding:"1.2rem",animationDelay:`${i*0.07}s`,borderColor:isFlash?"#ff224466":"#1f1f1f",transition:"border-color .3s"}}>
-                  <div style={{height:130,background:"#0a0a0a",border:"1px solid #1a1a1a",borderRadius:3,marginBottom:"1rem",display:"flex",alignItems:"center",justifyContent:"center",position:"relative",overflow:"hidden"}}>
-                    <div style={{position:"absolute",inset:0,background:`linear-gradient(135deg,${artistColor}11,transparent)`}}/>
-                    <div style={{textAlign:"center",position:"relative",zIndex:1}}>
-                      <div className="bebas" style={{color:"#222",fontSize:"2.5rem",letterSpacing:".05em"}}>{artistAvatar}</div>
-                      <div className="barlow" style={{color:"#333",fontSize:".65rem",letterSpacing:".1em"}}>24" × 24" CANVAS</div>
-                    </div>
-                  </div>
-                  <div className="bebas" style={{color:"#fff",fontSize:"1.2rem",letterSpacing:".03em",marginBottom:2}}>{item.title}</div>
-                  <div className="barlow" style={{color:"#555",fontSize:".75rem",marginBottom:"1rem"}}>by {item.artist}</div>
-                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-end",marginBottom:".75rem"}}>
-                    <div>
-                      <div className="barlow" style={{color:"#444",fontSize:".65rem",fontWeight:700,letterSpacing:".1em"}}>CURRENT BID</div>
-                      <div className="bebas" style={{fontSize:"1.8rem",lineHeight:1,color:isFlash?"#4ecdc4":"#ff2244",transition:"color .3s",textShadow:isFlash?"0 0 20px #4ecdc4":"none"}}>${bids[item.id]}</div>
-                    </div>
-                    <div style={{textAlign:"right"}}>
-                      <div className="barlow" style={{color:"#444",fontSize:".65rem",fontWeight:700,letterSpacing:".1em"}}>BIDS</div>
-                      <div className="bebas" style={{fontSize:"1.4rem",color:"#666"}}>{bidCounts[item.id]}</div>
-                    </div>
-                  </div>
-                  <button className="bid-btn" style={{width:"100%",padding:".5rem",fontSize:".9rem"}} onClick={()=>placeBid(item.id)}>
-                    {isFlash?"✓ BID PLACED!":`BID $${bids[item.id]+10} →`}
-                  </button>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      );
-    }
-
-    // ── SPONSORS ──────────────────────────────────────────────────────────────
     function Sponsors() {
       return (
         <div>
@@ -768,9 +866,9 @@ function WeeklyClasses() {
       );
     }
 
-    // ── ROOT ──────────────────────────────────────────────────────────────────
     function CanvasWars() {
-      const [tab, setTab] = useState("live");
+      // Default active tab updated to 'photos'
+      const [tab, setTab] = useState("photos");
       const [votes, setVotes] = useState({});
       const [votedFor, setVotedFor] = useState(null);
 
@@ -780,87 +878,86 @@ function WeeklyClasses() {
           <div className="scanlines"/>
 
           {/* HERO */}
-      <div style={{background:"linear-gradient(180deg,#111 0%,#0d0d0d 100%)",borderBottom:"1px solid #1e1e1e",padding:"1.5rem clamp(1rem,4vw,3rem)"}}>
-        <div style={{maxWidth:1300,margin:"0 auto"}}>
-          <div style={{display:"flex",flexWrap:"wrap",alignItems:"center",justifyContent:"space-between",gap:"1rem"}}>
-            <div>
-              <div style={{display:"flex",alignItems:"center",gap:"1rem",flexWrap:"wrap"}}>
-                {/* CANVAS */}
-                <div className="bebas glow-red" style={{fontSize:"clamp(2.5rem,7vw,5rem)",lineHeight:.9,letterSpacing:".02rem",color:"#ff2244",background:"rgba(255,34,68,0.05)",padding:"0 10px",borderRadius:"4px",border:"1px solid rgba(255,34,68,0.2)"}}>CANVAS</div>
-                
-                {/* WARS */}
-                <div className="bebas" style={{fontSize:"clamp(2.5rem,7vw,5rem)",lineHeight:.9,letterSpacing:".02rem",color:"#fff"}}>WARS</div>
-                
-                {/* VERTICAL DIVIDER LINE */}
-                <div style={{width:"2px",height:"40px",background:"#222",margin:"0 10px"}}></div>
-                
-                {/* QUARK FORCE PARTNERSHIP */}
-                <div style={{display:"flex",alignItems:"center",gap:".5rem"}}>
-                  <div className="bebas" style={{fontSize:"clamp(2rem,5vw,3.8rem)",lineHeight:.6,letterSpacing:".02rem",color:"#00d2ff"}}>QUARK</div>
-                  <div className="bebas" style={{fontSize:"clamp(2rem,5vw,3.8rem)",lineHeight:.6,letterSpacing:".02rem",color:"#ffd700"}}>FORCE</div>
+          <div style={{background:"linear-gradient(180deg,#111 0%,#0d0d0d 100%)",borderBottom:"1px solid #1e1e1e",padding:"1.5rem clamp(1rem,4vw,3rem)"}}>
+            <div style={{maxWidth:1300,margin:"0 auto"}}>
+              <div style={{display:"flex",flexWrap:"wrap",alignItems:"center",justifyContent:"space-between",gap:"1rem"}}>
+                <div>
+                  <div style={{display:"flex",alignItems:"center",gap:"1rem",flexWrap:"wrap"}}>
+                    {/* CANVAS */}
+                    <div className="bebas glow-red" style={{fontSize:"clamp(2.5rem,7vw,5rem)",lineHeight:.9,letterSpacing:".02rem",color:"#ff2244",background:"rgba(255,34,68,0.05)",padding:"0 10px",borderRadius:"4px",border:"1px solid rgba(255,34,68,0.2)"}}>CANVAS</div>
+                    
+                    {/* WARS */}
+                    <div className="bebas" style={{fontSize:"clamp(2.5rem,7vw,5rem)",lineHeight:.9,letterSpacing:".02rem",color:"#fff"}}>WARS</div>
+                    
+                    {/* VERTICAL DIVIDER LINE */}
+                    <div style={{width:"2px",height:"40px",background:"#222",margin:"0 10px"}}></div>
+                    
+                    {/* QUARK FORCE PARTNERSHIP */}
+                    <div style={{display:"flex",alignItems:"center",gap:".5rem"}}>
+                      <div className="bebas" style={{fontSize:"clamp(2rem,5vw,3.8rem)",lineHeight:.6,letterSpacing:".02rem",color:"#00d2ff"}}>QUARK</div>
+                      <div className="bebas" style={{fontSize:"clamp(2rem,5vw,3.8rem)",lineHeight:.6,letterSpacing:".02rem",color:"#ffd700"}}>FORCE</div>
+                    </div>
+                  </div>
+                  
+                  {/* Subtitle/Location text line */}
+                  <div className="barlow" style={{color:"#555",fontSize:".8rem",marginTop:"0.75rem",letterSpacing:".02rem"}}>
+                    Life Art Oh's Osaka Timeless Treasures Hub Blick Art QuarkForce · 4041 CraterLake ave Medford· Medford PARK · MEDFORD, OR
+                  </div>
+                </div>
+
+                {/* Right side status block */}
+                <div style={{textAlign:"right"}}>
+                  <div style={{display:"flex",alignItems:"center",gap:".5rem",justifyContent:"flex-end",marginBottom:".25rem"}}>
+                    <span className="barlow glow-red" style={{background:"#ff2244",color:"#fff",fontSize:".65rem",fontWeight:700,padding:"2px 6px",borderRadius:"3px",letterSpacing:".05rem"}}>• LIVE</span>
+                    <span className="barlow" style={{color:"#888",fontSize:".75rem",fontWeight:500}}>June 6, 2026 · 11AM-7PM</span>
+                  </div>
+                  <div className="barlow" style={{color:"#444",fontSize:".65rem"}}>6 Artists · 24×24 Canvas · Timed Battle</div>
                 </div>
               </div>
-              
-              {/* Subtitle/Location text line right below the logos */}
-              <div className="barlow" style={{color:"#555",fontSize:".8rem",marginTop:"0.75rem",letterSpacing:".02rem"}}>
-                Life Art Oh's Osaka Timeless Treasures Hub Blick Art QuarkForce · 4041 CraterLake ave Medford· Medford PARK · MEDFORD, OR
-              </div>
-            </div>
-
-            {/* Right side status block (LIVE badge and date info) */}
-            <div style={{textAlign:"right"}}>
-              <div style={{display:"flex",alignItems:"center",gap:".5rem",justifyContent:"flex-end",marginBottom:".25rem"}}>
-                <span className="barlow glow-red" style={{background:"#ff2244",color:"#fff",fontSize:".65rem",fontWeight:700,padding:"2px 6px",borderRadius:"3px",letterSpacing:".05rem"}}>• LIVE</span>
-                <span className="barlow" style={{color:"#888",fontSize:".75rem",fontWeight:500}}>June 6, 2026 · 11AM-7PM</span>
-              </div>
-              <div className="barlow" style={{color:"#444",fontSize:".65rem"}}>6 Artists · 24×24 Canvas · Timed Battle</div>
             </div>
           </div>
-        </div>
-      </div>
 
           {/* TABS */}
           <div style={{borderBottom:"1px solid #1e1e1e",background:"#0d0d0d",position:"sticky",top:0,zIndex:100}}>
-        <div style={{maxWidth:1300,margin:"0 auto",padding:"0 clamp(.5rem,3vw,2rem)",display:"flex",alignItems:"center",overflowX:"auto"}}>
-          <div style={{display:"flex", flexGrow: 1}}>
-            {TABS.map(t=>(
-              <button key={t.id} className={`tab-btn ${tab===t.id?"tab-active":""}`} onClick={()=>setTab(t.id)}>{t.label}</button>
-            ))}
+            <div style={{maxWidth:1300,margin:"0 auto",padding:"0 clamp(.5rem,3vw,2rem)",display:"flex",alignItems:"center",overflowX:"auto"}}>
+              <div style={{display:"flex", flexGrow: 1}}>
+                {TABS.map(t=>(
+                  <button key={t.id} className={`tab-btn ${tab===t.id?"tab-active":""}`} onClick={()=>setTab(t.id)}>{t.label}</button>
+                ))}
+              </div>
+              <ThemeAudio />
+            </div>
           </div>
-          <ThemeAudio />
-        </div>
-      </div>
 
-          {/* MAIN */}
+          {/* MAIN CONTENT AREA */}
           <div style={{maxWidth:1300,margin:"0 auto",padding:"2rem clamp(1rem,4vw,3rem) 4rem"}}>
+            {tab==="photos"   && <EventPhotos/>}
             {tab==="live"     && <LiveBattle votes={votes} setVotes={setVotes} votedFor={votedFor} setVotedFor={setVotedFor}/>}
             {tab==="weekly"   && <WeeklyClasses/>}
             {tab==="leaders"  && <Leaderboard/>}
             {tab==="artists"  && <ArtistProfiles/>}
-            {tab==="auction"  && <SilentAuction/>}
             {tab==="sponsors" && <Sponsors/>}
           </div>
-    
 
-        {/* FOOTER */}
+          {/* FOOTER */}
           <div style={{borderTop:"1px solid #1a1a1a", padding:"1.25rem clamp(1rem,4vw,3rem)", display:"flex", flexWrap:"wrap", justifyContent:"space-between", alignItems:"center", gap:".75rem"}}>
             <div className="bebas" style={{color:"#333", fontSize:"1rem", letterSpacing:".1em"}}>CANVAS WARS Life Art Oh's Osaka Timeless Treasures Hub Blick Art QuarkForce · 4041 CraterLake ave Medford· MEDFORD, OR · 2026</div>
             <div className="barlow" style={{color:"#2a2a2a", fontSize:".75rem"}}>No oils · No aerosols · No hazardous materials · Media release required · Artist entry $40 · Vendor fee $40</div>
           </div>
 
-         {/* REGISTRATION & PAYMENTS SECTION */}
+          {/* REGISTRATION & PAYMENTS SECTION */}
           <div className="container" style={{padding: "20px"}}> 
-            <h3 style={{ fontFamily: 'Bebas Neue', color: '#B20000', marginTop: 0 }}>
+            <h3 style={{ fontFamily: 'Bebas Neue', color: '#ff2244', marginTop: 0 }}>
               💳 REGISTRATION & PAYMENTS
             </h3>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
-              <a href="https://square.link/u/8pB8RjJW" className="btn-main" style={{ fontSize: '14px', textAlign: 'center', textDecoration: 'none', display: 'block' , color: 'green'  }}>
+              <a href="https://square.link/u/8pB8RjJW" className="btn-main" style={{ fontSize: '14px', textAlign: 'center', textDecoration: 'none', display: 'block' }}>
                 ARTIST ENTRY ($40)
               </a>
-              <a href="https://square.link/u/o0uEAH8Z" className="btn-main" style={{ fontSize: '14px', background: 'var(--ora)', textAlign: 'center', textDecoration: 'none', display: 'block' , color: 'green' }}>
+              <a href="https://square.link/u/o0uEAH8Z" className="btn-main" style={{ fontSize: '14px', textAlign: 'center', textDecoration: 'none', display: 'block' }}>
                 VENDOR FEE ($40)
               </a>
-              <a href="https://canvaswars.myspreadshop.com/" className="btn-main" style={{ fontSize: '14px', background: 'var(--blu)', textAlign: 'center', textDecoration: 'none', display: 'block' , color: 'green'  }}>
+              <a href="https://canvaswars.myspreadshop.com/" className="btn-main" style={{ fontSize: '14px', textAlign: 'center', textDecoration: 'none', display: 'block' }}>
                 CanvasWars Merch
               </a>
             </div>
