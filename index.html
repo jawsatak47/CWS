@@ -173,12 +173,795 @@
 
     // ── ARTISTS DATA ────────────────────────────────────────────────────────
     const ARTISTS = [
-      { id:1, name:"Luke",    avatar:"LE", medium:"PinStripe on wood",   status:"PAINTING",   wins:0, color:"#ff6b35", bio:"PinStripe.", tags:["Acrylic","Mixed Media","Texture"] },
-      { id:2, name:"Miles",   avatar:"MF", medium:"Acrylic",        status:"PAINTING",   wins:0, color:"#4ecdc4", bio:"Surreal.", tags:["Watercolor","Ink","Illustrative"] },
-      { id:3, name:"FAWN",   avatar:"J", medium:"Acrylic",       status:"PAINTING",   wins:0, color:"#ffd700", bio:"Acrylic.", tags:["Charcoal","Marker","Street"] },
-      { id:4, name:"Erin",   avatar:"EH", medium:"Acrylic",     status:"PAINTING",   wins:0, color:"#ffd700", bio:"Acrylic.", tags:["Acrylic","Gold Leaf","Gestural"] },
-      { id:5, name:"Oliver",    avatar:"OF", medium:"Acrylic", status:"PAINTING",   wins:0, color:"#ff2244", bio:"Acrylic.", tags:["Ballpoint","Acrylic","Detail"] },
-      { id:6, name:"Oliver Jr", avatar:"OFj", medium:"Acrylic",     status:"PAINTING", wins:0, color:"#ff2244",    bio:"Acrylic.", tags:["Marker","Watercolor","Mural"] },
+      { id:1, name:"Luke",    avatar:"LE", medium:"PinStripe on wood",   status:"5th",   wins:0, color:"#ff6b35", bio:"PinStripe.", tags:["Acrylic","Mixed Media","Texture"] },
+      { id:2, name:"Miles",   avatar:"MF", medium:"Acrylic",        status:"1st",   wins:0, color:"#4ecdc4", bio:"Surreal.", tags:["Watercolor","Ink","Illustrative"] },
+      { id:3, name:"FAWN",   avatar:"J", medium:"Acrylic",       status:"6th",   wins:0, color:"#ffd700", bio:"Acrylic.", tags:["Charcoal","Marker","Street"] },
+      { id:4, name:"Erin",   avatar:"EH", medium:"Acrylic",     status:"3rd",   wins:0, color:"#ffd700", bio:"Acrylic.", tags:["Acrylic","Gold Leaf","Gestural"] },
+      { id:5, name:"Oliver",    avatar:"OF", medium:"Acrylic", status:"4th",   wins:0, color:"#ff2244", bio:"Acrylic.", tags:["Ballpoint","Acrylic","Detail"] },
+      { id:6, name:"Oliver Jr", avatar:"OFj", medium:"Acrylic",     status:"2nd", wins:0, color:"#ff2244",    bio:"Acrylic.", tags:["Marker","Watercolor","Mural"] },
     ];
 
-    // ── 50 EVENT PHOTOS ARRAY
+    // ── 50 EVENT PHOTOS ARRAY (EDIT YOUR FILE PATHS / LINKS HERE) ───────────
+    const EVENT_PHOTOS = [
+      { id: 1,  url: "./photos/photo_01.jpg", title: "Canvas Wars Action #01", artist: "Luke" },
+      { id: 2,  url: "./photos/photo_02.jpg", title: "Canvas Wars Action #02", artist: "Miles" },
+      { id: 3,  url: "./photos/photo_03.jpg", title: "Canvas Wars Action #03", artist: "FAWN" },
+      { id: 4,  url: "./photos/photo_04.jpg", title: "Canvas Wars Action #04", artist: "Erin" },
+      { id: 5,  url: "./photos/photo_05.jpg", title: "Canvas Wars Action #05", artist: "Oliver" },
+      { id: 6,  url: "./photos/photo_06.jpg", title: "Canvas Wars Action #06", artist: "Oliver Jr" },
+      { id: 7,  url: "./photos/photo_07.jpg", title: "Canvas Wars Action #07", artist: "Luke" },
+      { id: 8,  url: "./photos/photo_08.jpg", title: "Canvas Wars Action #08", artist: "Miles" },
+      { id: 9,  url: "./photos/photo_09.jpg", title: "Canvas Wars Action #09", artist: "FAWN" },
+      { id: 10, url: "./photos/photo_10.jpg", title: "Canvas Wars Action #10", artist: "Erin" },
+      { id: 11, url: "./photos/photo_11.jpg", title: "Canvas Wars Action #11", artist: "Oliver" },
+      { id: 12, url: "./photos/photo_12.jpg", title: "Canvas Wars Action #12", artist: "Oliver Jr" },
+      { id: 13, url: "./photos/photo_13.jpg", title: "Canvas Wars Action #13", artist: "Luke" },
+      { id: 14, url: "./photos/photo_14.jpg", title: "Canvas Wars Action #14", artist: "Miles" },
+      { id: 15, url: "./photos/photo_15.jpg", title: "Canvas Wars Action #15", artist: "FAWN" },
+      { id: 16, url: "./photos/photo_16.jpg", title: "Canvas Wars Action #16", artist: "Erin" },
+      { id: 17, url: "./photos/photo_17.jpg", title: "Canvas Wars Action #17", artist: "Oliver" },
+      { id: 18, url: "./photos/photo_18.jpg", title: "Canvas Wars Action #18", artist: "Oliver Jr" },
+      { id: 19, url: "./photos/photo_19.jpg", title: "Canvas Wars Action #19", artist: "Luke" },
+      { id: 20, url: "./photos/photo_20.jpg", title: "Canvas Wars Action #20", artist: "Miles" },
+      { id: 21, url: "./photos/photo_21.jpg", title: "Canvas Wars Action #21", artist: "FAWN" },
+      { id: 22, url: "./photos/photo_22.jpg", title: "Canvas Wars Action #22", artist: "Erin" },
+      { id: 23, url: "./photos/photo_23.jpg", title: "Canvas Wars Action #23", artist: "Oliver" },
+      { id: 24, url: "./photos/photo_24.jpg", title: "Canvas Wars Action #24", artist: "Oliver Jr" },
+      { id: 25, url: "./photos/photo_25.jpg", title: "Canvas Wars Action #25", artist: "Luke" },
+      { id: 26, url: "./photos/photo_26.jpg", title: "Canvas Wars Action #26", artist: "Miles" },
+      { id: 27, url: "./photos/photo_27.jpg", title: "Canvas Wars Action #27", artist: "FAWN" },
+      { id: 28, url: "./photos/photo_28.jpg", title: "Canvas Wars Action #28", artist: "Erin" },
+      { id: 29, url: "./photos/photo_29.jpg", title: "Canvas Wars Action #29", artist: "Oliver" },
+      { id: 30, url: "./photos/photo_30.jpg", title: "Canvas Wars Action #30", artist: "Oliver Jr" },
+      { id: 31, url: "./photos/photo_31.jpg", title: "Canvas Wars Action #31", artist: "Luke" },
+      { id: 32, url: "./photos/photo_32.jpg", title: "Canvas Wars Action #32", artist: "Miles" },
+      { id: 33, url: "./photos/photo_33.jpg", title: "Canvas Wars Action #33", artist: "FAWN" },
+      { id: 34, url: "./photos/photo_34.jpg", title: "Canvas Wars Action #34", artist: "Erin" },
+      { id: 35, url: "./photos/photo_35.jpg", title: "Canvas Wars Action #35", artist: "Oliver" },
+      { id: 36, url: "./photos/photo_36.jpg", title: "Canvas Wars Action #36", artist: "Oliver Jr" },
+      { id: 37, url: "./photos/photo_37.jpg", title: "Canvas Wars Action #37", artist: "Luke" },
+      { id: 38, url: "./photos/photo_38.jpg", title: "Canvas Wars Action #38", artist: "Miles" },
+      { id: 39, url: "./photos/photo_39.jpg", title: "Canvas Wars Action #39", artist: "FAWN" },
+      { id: 40, url: "./photos/photo_40.jpg", title: "Canvas Wars Action #40", artist: "Erin" },
+      { id: 41, url: "./photos/photo_41.jpg", title: "Canvas Wars Action #41", artist: "Oliver" },
+      { id: 42, url: "./photos/photo_42.jpg", title: "Canvas Wars Action #42", artist: "Oliver Jr" },
+      { id: 43, url: "./photos/photo_43.jpg", title: "Canvas Wars Action #43", artist: "Luke" },
+      { id: 44, url: "./photos/photo_44.jpg", title: "Canvas Wars Action #44", artist: "Miles" },
+      { id: 45, url: "./photos/photo_45.jpg", title: "Canvas Wars Action #45", artist: "FAWN" },
+      { id: 46, url: "./photos/photo_46.jpg", title: "Canvas Wars Action #46", artist: "Erin" },
+      { id: 47, url: "./photos/photo_47.jpg", title: "Canvas Wars Action #47", artist: "Oliver" },
+      { id: 48, url: "./photos/photo_48.jpg", title: "Canvas Wars Action #48", artist: "Oliver Jr" },
+      { id: 49, url: "./photos/photo_49.jpg", title: "Canvas Wars Action #49", artist: "Luke" },
+      { id: 50, url: "./photos/photo_50.jpg", title: "Canvas Wars Action #50", artist: "Miles" }
+    ];
+
+    const LEADERBOARD_DATA = {
+      all:  [
+        {rank:1,name:"TBD",  wins:0,battles:0,rate:0},
+        {rank:2,name:"TBD",   wins:0,battles:0,rate:0},
+        {rank:3,name:"TBD",   wins:0,battles:0, rate:0},
+        {rank:4,name:"TBD",   wins:0,battles:0, rate:0},
+        {rank:5,name:"TBD",  wins:0,battles:0, rate:0},
+        {rank:6,name:"TBD",wins:0,battles:0, rate:0},
+      ],
+      month:[
+        {rank:1,name:"TBD",   wins:0,battles:0,rate:0},
+        {rank:2,name:"TBD",  wins:0,battles:0,rate:0},
+        {rank:3,name:"TBD",   wins:0,battles:0,rate:0},
+        {rank:4,name:"TBD",   wins:0,battles:0,rate:0},
+        {rank:5,name:"TBD",  wins:0,battles:0,rate:0},
+        {rank:6,name:"TBD",  wins:0,battles:0,rate:0},
+      ],
+      live: [
+        {rank:1,name:"TBD",  wins:0,battles:0,rate:0},
+        {rank:2,name:"TBD",   wins:0,battles:0,rate:0},
+        {rank:3,name:"TBD",  wins:0,battles:0,rate:0},
+        {rank:4,name:"TBD",   wins:0,battles:0,rate:0},
+        {rank:5,name:"TBD",   wins:0,battles:0,rate:0},
+        {rank:6,name:"TBD", wins:0,battles:0,rate:0},
+      ],
+    };
+
+    const WEEKLY_CLASSES = [
+      { id: 1, theme: "Graffiti Foundations: Tags & Handstyles", date: "6/13/26", entryFee: 20, participants: 0, max: 10, revealed: true, infoLink: "https://jawsatak47.wixsite.com/jaws/copy-of-service-1" },
+      { id: 2, theme: "Graffiti Foundations: Bubble Letters", date: "6/20/26", entryFee: 20, participants: 0, max: 10, revealed: true, infoLink: "https://jawsatak47.wixsite.com/jaws/copy-of-service-1" },
+      { id: 3, theme: "Graffiti Foundations: Letter Structure", date: "6/27/26", entryFee: 20, participants: 0, max: 10, revealed: true, infoLink: "https://jawsatak47.wixsite.com/jaws/copy-of-service-1" },
+      { id: 4, theme: "Graffiti Foundations: Throw-Ups", date: "7/04/26", entryFee: 20, participants: 0, max: 10, revealed: true, infoLink: "https://jawsatak47.wixsite.com/jaws/copy-of-service-1" },
+      { id: 5, theme: "Wildstyle Development: Flow", date: "7/11/26", entryFee: 20, participants: 0, max: 10, revealed: true, infoLink: "https://jawsatak47.wixsite.com/jaws/copy-of-service-1" },
+      { id: 6, theme: "Wildstyle Development: Complexity vs Readability", date: "7/18/26", entryFee: 20, participants: 0, max: 10, revealed: true, infoLink: "https://jawsatak47.wixsite.com/jaws/copy-of-service-1" },
+      { id: 7, theme: "Wildstyle Development: Sketch Development", date: "7/25/26", entryFee: 20, participants: 0, max: 10, revealed: true, infoLink: "https://jawsatak47.wixsite.com/jaws/copy-of-service-1" },
+    ];
+
+    const TABS = [
+      {id:"photos",  label:"📸 EVENT PHOTOS"},
+      {id:"live",    label:"🎨 LIVE BATTLE"},
+      {id:"weekly",  label:"⚡ WEEKLY CLASSES"},
+      {id:"leaders", label:"🏆 LEADERBOARD"},
+      {id:"artists", label:"👤 ARTISTS"},
+      {id:"sponsors",label:"💰 SPONSORS"},
+    ];
+
+    function pad(n){ return String(n).padStart(2,"0"); }
+
+    function useCountdown(targetDate) {
+      const [diff, setDiff] = useState(0);
+      useEffect(() => {
+        const update = () => {
+          setDiff(Math.max(0, new Date(targetDate).getTime() - Date.now()));
+        };
+        update();
+        const t = setInterval(update, 1000);
+        return () => clearInterval(t);
+      }, [targetDate]);
+      const total = Math.floor(diff / 1000);
+      return {
+        d: Math.floor(total / 86400),
+        h: Math.floor((total % 86400) / 3600),
+        m: Math.floor((total % 3600) / 60),
+        s: total % 60,
+        done: diff === 0,
+      };
+    }
+
+    function CDUnit({ value, label }) {
+      return (
+        <div style={{display:"flex",flexDirection:"column",alignItems:"center"}}>
+          <div className="bebas tick" style={{
+            fontSize:"clamp(2.2rem,5vw,4rem)",lineHeight:1,color:"#ff2244",
+            letterSpacing:".02em",textShadow:"0 0 20px #ff224488",
+            minWidth:"2.2ch",textAlign:"center"
+          }}>
+            {pad(value)}
+          </div>
+          <div className="barlow" style={{fontSize:".6rem",color:"#555",letterSpacing:".15em",marginTop:2,fontWeight:700}}>
+            {label}
+          </div>
+        </div>
+      );
+    }
+
+    function CDSep() {
+      return (
+        <div className="bebas blink" style={{fontSize:"clamp(1.8rem,4vw,3rem)",color:"#ff224488",paddingBottom:16,lineHeight:1}}>:</div>
+      );
+    }
+
+    function StatusBadge({ status }) {
+      const cls = status==="PAINTING" ? "status-painting" : status==="FINALIST" ? "status-finalist" : "status-eliminated";
+      return (
+        <span className={`barlow ${cls}`} style={{fontSize:".7rem",fontWeight:700,letterSpacing:".12em",padding:"2px 8px",borderRadius:2,display:"inline-block"}}>
+          {status==="PAINTING" ? "● " : status==="FINALIST" ? "★ " : "✕ "}{status}
+        </span>
+      );
+    }
+
+    function SectionHead({ icon, title, sub }) {
+      return (
+        <div style={{marginBottom:"1.5rem"}}>
+          <div className="bebas" style={{fontSize:"clamp(1.6rem,3.5vw,2.6rem)",color:"#fff",letterSpacing:".04em",display:"flex",alignItems:"center",gap:".5rem"}}>
+            {icon && <span style={{color:"#ff2244"}}>{icon}</span>} {title}
+          </div>
+          {sub && <div className="barlow" style={{color:"#555",fontSize:".85rem",marginTop:2}}>{sub}</div>}
+        </div>
+      );
+    }
+
+    // ── EVENT PHOTOS TAB COMPONENT ─────────────────────────────────────────
+    function EventPhotos() {
+      const [lightboxIndex, setLightboxIndex] = useState(null);
+
+      const openLightbox = (index) => setLightboxIndex(index);
+      const closeLightbox = () => setLightboxIndex(null);
+
+      const prevPhoto = (e) => {
+        e.stopPropagation();
+        setLightboxIndex((prev) => (prev > 0 ? prev - 1 : EVENT_PHOTOS.length - 1));
+      };
+
+      const nextPhoto = (e) => {
+        e.stopPropagation();
+        setLightboxIndex((prev) => (prev < EVENT_PHOTOS.length - 1 ? prev + 1 : 0));
+      };
+
+      return (
+        <div>
+          <SectionHead 
+            icon={<IconCamera size={24} color="#ff2244"/>} 
+            title="EVENT PHOTOS GALLERY" 
+            sub={`Canvas Wars 2026 · ${EVENT_PHOTOS.length} Live Action & Artwork Shots`}
+          />
+
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
+            gap: "1rem"
+          }}>
+            {EVENT_PHOTOS.map((photo, i) => (
+              <div 
+                key={photo.id} 
+                className="photo-card fade-up"
+                style={{ animationDelay: `${(i % 12) * 0.05}s` }}
+                onClick={() => openLightbox(i)}
+              >
+                <div style={{
+                  height: "210px",
+                  background: "#181818",
+                  position: "relative",
+                  overflow: "hidden"
+                }}>
+                  <img 
+                    src={photo.url} 
+                    alt={photo.title}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                      display: "block"
+                    }}
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                      e.target.parentNode.style.display = 'flex';
+                      e.target.parentNode.style.alignItems = 'center';
+                      e.target.parentNode.style.justifyContent = 'center';
+                      e.target.parentNode.style.flexDirection = 'column';
+                      e.target.parentNode.innerHTML = `<div class="bebas" style="color:#ff2244;font-size:1.4rem;">PHOTO #${photo.id}</div><div class="barlow" style="color:#555;font-size:0.75rem;">${photo.artist}</div>`;
+                    }}
+                  />
+                  <div style={{
+                    position: "absolute",
+                    top: "8px",
+                    right: "8px",
+                    background: "rgba(0,0,0,0.75)",
+                    border: "1px solid #ff224440",
+                    color: "#ff2244",
+                    fontSize: "0.65rem",
+                    padding: "2px 6px",
+                    borderRadius: "2px"
+                  }} className="barlow font-bold">
+                    #{photo.id}
+                  </div>
+                </div>
+                <div style={{ padding: "0.75rem" }}>
+                  <div className="bebas" style={{ color: "#fff", fontSize: "1rem", letterSpacing: ".03em" }}>
+                    {photo.title}
+                  </div>
+                  <div className="barlow" style={{ color: "#777", fontSize: ".75rem", marginTop: "2px" }}>
+                    Artist: <span style={{ color: "#aaa" }}>{photo.artist}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* LIGHTBOX MODAL */}
+          {lightboxIndex !== null && (
+            <div 
+              style={{
+                position: "fixed",
+                inset: 0,
+                zIndex: 10000,
+                background: "rgba(0,0,0,0.92)",
+                backdropFilter: "blur(5px)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                padding: "2rem"
+              }}
+              onClick={closeLightbox}
+            >
+              <button 
+                onClick={closeLightbox}
+                style={{
+                  position: "absolute",
+                  top: "20px",
+                  right: "25px",
+                  background: "transparent",
+                  border: "none",
+                  color: "#fff",
+                  fontSize: "2rem",
+                  cursor: "pointer",
+                  zIndex: 10001
+                }}
+              >✕</button>
+
+              <button 
+                onClick={prevPhoto}
+                style={{
+                  position: "absolute",
+                  left: "20px",
+                  background: "#111",
+                  border: "1px solid #ff2244",
+                  color: "#fff",
+                  fontSize: "1.5rem",
+                  padding: "0.5rem 1rem",
+                  cursor: "pointer",
+                  borderRadius: "4px",
+                  zIndex: 10001
+                }}
+              >❮</button>
+
+              <div style={{ maxWidth: "900px", width: "100%", textAlign: "center" }} onClick={(e)=>e.stopPropagation()}>
+                <img 
+                  src={EVENT_PHOTOS[lightboxIndex].url} 
+                  alt={EVENT_PHOTOS[lightboxIndex].title}
+                  style={{
+                    maxHeight: "75vh",
+                    maxWidth: "100%",
+                    objectFit: "contain",
+                    borderRadius: "4px",
+                    border: "1px solid #333"
+                  }}
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                    e.target.parentNode.innerHTML = `<div style="padding:4rem;background:#111;border:1px solid #ff2244;border-radius:4px;"><div class="bebas" style="color:#ff2244;font-size:2rem;">IMAGE FILE NEEDED</div><div class="barlow" style="color:#aaa;margin-top:10px;">Replace <b>${EVENT_PHOTOS[lightboxIndex].url}</b> in the HTML code with your photo path.</div></div>`;
+                  }}
+                />
+                <div style={{ marginTop: "1rem" }}>
+                  <div className="bebas" style={{ color: "#fff", fontSize: "1.6rem" }}>
+                    {EVENT_PHOTOS[lightboxIndex].title}
+                  </div>
+                  <div className="barlow" style={{ color: "#ff2244", fontSize: "0.9rem" }}>
+                    PHOTO {lightboxIndex + 1} OF {EVENT_PHOTOS.length} · ARTIST: {EVENT_PHOTOS[lightboxIndex].artist}
+                  </div>
+                </div>
+              </div>
+
+              <button 
+                onClick={nextPhoto}
+                style={{
+                  position: "absolute",
+                  right: "20px",
+                  background: "#111",
+                  border: "1px solid #ff2244",
+                  color: "#fff",
+                  fontSize: "1.5rem",
+                  padding: "0.5rem 1rem",
+                  cursor: "pointer",
+                  borderRadius: "4px",
+                  zIndex: 10001
+                }}
+              >❯</button>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // ── LIVE BATTLE ───────────────────────────────────────────────────────────
+    function LiveBattle({ votes, setVotes, votedFor, setVotedFor }) {
+      React.useEffect(() => {
+        const votesRef = database.ref('votes');
+        votesRef.on('value', (snapshot) => {
+          const data = snapshot.val();
+          if (data) {
+            setVotes(data);
+          }
+        });
+        return () => votesRef.off();
+      }, []);
+      const cd = useCountdown("2026-06-06T20:00:00");
+      const totalVotes = Object.values(votes).reduce((a,b)=>a+b,0) || 1;
+
+      const handleVote = (id) => {
+        if (votedFor !== null) return;
+        const voteRef = database.ref(`votes/${id}`);
+        voteRef.transaction((currentVotes) => {
+          return (currentVotes || 0) + 1;
+        });
+        setVotedFor(id);
+      };
+
+      return (
+        <div>
+          <div style={{background:"linear-gradient(90deg,#ff224415,#ff224405,transparent)",border:"1px solid #ff224430",borderRadius:4,padding:"1rem 1.5rem",marginBottom:"2rem",display:"flex",flexWrap:"wrap",gap:"1rem",alignItems:"center",justifyContent:"space-between"}}>
+            <div>
+              <div className="bebas" style={{color:"#ff2244",fontSize:".85rem",letterSpacing:".15em"}}>● LIVE NOW — CANVAS WARS 2026</div>
+              <div className="bebas" style={{color:"#fff",fontSize:"clamp(1rem,2.5vw,1.5rem)",letterSpacing:".03em"}}>Life Art Oh's Osaka Timeless Treasures Hub Blick Art QuarkForce · 4041 CraterLake ave Medford · MEDFORD, OR · JUNE 6</div>
+            </div>
+            <div>
+              <div className="barlow" style={{color:"#555",fontSize:".7rem",letterSpacing:".1em",fontWeight:700,textAlign:"center"}}>BRUSHES DOWN IN</div>
+              <div style={{display:"flex",gap:".4rem",alignItems:"center",marginTop:4}}>
+                <CDUnit value={cd.d} label="DAYS"/>
+                <CDSep/>
+                <CDUnit value={cd.h} label="HRS"/>
+                <CDSep/>
+                <CDUnit value={cd.m} label="MIN"/>
+                <CDSep/>
+                <CDUnit value={cd.s} label="SEC"/>
+              </div>
+            </div>
+          </div>
+
+          <div style={{display:"flex",gap:".75rem",marginBottom:"1.5rem",flexWrap:"wrap"}}>
+            {[["70%","PANEL JUDGES","#ff2244"],["30%","AUDIENCE VOTE","#4ecdc4"]].map(([pct,lbl,clr]) => (
+              <div key={lbl} style={{background:"#111",border:"1px solid #1f1f1f",borderRadius:4,padding:".6rem 1.2rem",display:"flex",alignItems:"center",gap:".7rem"}}>
+                <div className="bebas" style={{fontSize:"1.6rem",color:clr}}>{pct}</div>
+                <div className="barlow" style={{color:"#888",fontSize:".75rem",fontWeight:700,letterSpacing:".1em",lineHeight:1.3}}>{lbl}</div>
+              </div>
+            ))}
+            <div style={{background:"#111",border:"1px solid #1f1f1f",borderRadius:4,padding:".6rem 1.2rem",display:"flex",alignItems:"center",gap:".7rem"}}>
+              <IconUsers size={16} color="#555"/>
+              <div className="barlow" style={{color:"#666",fontSize:".8rem",fontWeight:600}}>{Object.values(votes).reduce((a,b)=>a+b,0)} VOTES CAST</div>
+            </div>
+          </div>
+
+          <SectionHead title="COMPETING ARTISTS"/>
+
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(270px,1fr))",gap:"1rem"}}>
+            {ARTISTS.map((a,i) => {
+              const v = votes[a.id] || 0;
+              const pct = Math.round((v/totalVotes)*100);
+              const isVoted = votedFor===a.id;
+              const hasVoted = votedFor!==null;
+              const isElim = a.status==="ELIMINATED";
+              return (
+                <div key={a.id} className="artist-card fade-up" style={{padding:"1.25rem",animationDelay:`${i*0.07}s`,opacity:isElim?.5:1}}>
+                  <div style={{display:"flex",alignItems:"flex-start",gap:".8rem",marginBottom:"1rem"}}>
+                    <div style={{width:52,height:52,borderRadius:4,flexShrink:0,background:`linear-gradient(135deg,${a.color}33,${a.color}11)`,border:`1px solid ${a.color}44`,display:"flex",alignItems:"center",justifyContent:"center"}}>
+                      <span className="bebas" style={{fontSize:"1.1rem",color:a.color}}>{a.avatar}</span>
+                    </div>
+                    <div style={{flex:1,minWidth:0}}>
+                      <div className="bebas" style={{fontSize:"1.1rem",color:isElim?"#444":"#fff",letterSpacing:".03em",lineHeight:1.1}}>{a.name}</div>
+                      <div className="barlow" style={{color:"#555",fontSize:".75rem",marginBottom:6}}>{a.medium}</div>
+                      <StatusBadge status={a.status}/>
+                    </div>
+                  </div>
+                  <div style={{marginBottom:".75rem"}}>
+                    <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}>
+                      <div className="barlow" style={{color:"#444",fontSize:".7rem",fontWeight:700,letterSpacing:".1em"}}>AUDIENCE VOTE</div>
+                      <div className="bebas" style={{color:isElim?"#333":"#ff2244",fontSize:".9rem"}}>{isElim?"—":`${pct}%`}</div>
+                    </div>
+                    <div style={{height:3,background:"#1e1e1e",borderRadius:2}}>
+                      <div style={{height:"100%",width:`${isElim?0:pct}%`,background:"#ff2244",borderRadius:2,transition:"width .6s ease"}}/>
+                    </div>
+                  </div>
+                  <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+                    <div className="barlow" style={{color:"#555",fontSize:".75rem"}}><span style={{color:"#888",fontWeight:700}}>{v}</span> votes</div>
+                    <button className={`vote-btn ${isVoted?"voted-btn":""}`} onClick={()=>handleVote(a.id)} disabled={hasVoted||isElim}>
+                      {isVoted?"✓ VOTED":isElim?"ELIMINATED":"VOTE"}
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          <div style={{marginTop:"2rem",background:"#111",border:"1px solid #1e1e1e",borderRadius:4,padding:"1rem 1.5rem",display:"flex",flexWrap:"wrap",gap:".75rem 2rem"}}>
+            {[
+              ["CANVAS SIZE","24\" × 24\" Primed Canvas / Birch Panel"],
+              ["MEDIUMS","Pencil · Charcoal · Ballpoint · Marker · Watercolor · Acrylic · Gold Leaf"],
+              ["PRIZES","1st $300 · 2nd $150 · 3rd $50"],
+              ["VENDOR SPACES","Up to 15 · $40/space · Own setup required"],
+            ].map(([k,v]) => (
+              <div key={k}>
+                <div className="barlow" style={{color:"#555",fontSize:".65rem",fontWeight:700,letterSpacing:".1em"}}>{k}</div>
+                <div className="barlow" style={{color:"#888",fontSize:".8rem"}}>{v}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    // ── WEEKLY CLASSES ────────────────────────────────────────────────────────
+    function WeeklyClasses() {
+      return (
+        <div>
+          <SectionHead icon={<IconZap size={22} color="#ff2244"/>} title="WEEKLY CLASSES" sub="Entry fee: $20 per class · Square checkout · email after received" />
+          <div style={{display:"grid",gap:"1rem"}}>
+            {WEEKLY_CLASSES.map((b,i) => {
+              const isLive = b.status==="LIVE";
+              const pct = Math.round((b.participants/b.max)*100);
+              return (
+                <div key={b.id} className="fade-up" style={{background:"#111",border:`1px solid ${isLive?"#ff2244":"#1f1f1f"}`,borderRadius:"6px",padding:"1.5rem"}}>
+                  <div style={{display:"flex",flexWrap:"wrap",justifyContent: "space-between",alignItems:"flex-start",gap:"1rem"}}>
+                    <div>
+                      <div style={{display:"flex",gap:".5rem",alignItems:"center",marginBottom:".4rem"}}>
+                        {isLive && <span className="barlow glow-red" style={{fontSize:".65rem",fontWeight:700,letterSpacing:".15rem",color:"#ff2244"}}>LIVE</span>}
+                        {!isLive && <span className="barlow" style={{fontSize:".65rem",fontWeight:700,letterSpacing:".15rem",color:"#555"}}>UPCOMING</span>}
+                        <span className="barlow" style={{color:"#444",fontSize:".75rem"}}>CLASS #{b.id}</span>
+                      </div>
+                      <div className="bebas" style={{fontSize:"1.5rem",color:"#fff",letterSpacing:".04rem"}}>
+                        {b.theme}
+                      </div>
+                      <div className="barlow" style={{color:"#555",fontSize:".8rem",marginTop:2}}>Fee: <span style={{color:"#888"}}>${b.entryFee}</span></div>
+                    </div>
+                    
+                    <div style={{textAlign:"right"}}>
+                      <div className="barlow" style={{color:"#555",fontSize:".65rem",letterSpacing:".1rem",fontWeight:700,marginBottom:2}}>DATE</div>
+                      <div className="bebas" style={{fontSize:"1.6rem",color:isLive?"#ff2244":"#666",letterSpacing:".02rem"}}>
+                        {b.date}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div style={{marginTop:"1rem"}}>
+                    <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}>
+                      <div className="barlow" style={{color:"#444",fontSize:".7rem",fontWeight:700,letterSpacing:".1rem"}}>SLOTS FILLED</div>
+                      <div className="barlow" style={{color:"#666",fontSize:".75rem"}}>{b.participants} / {b.max}</div>
+                    </div>
+                    <div style={{background:"#1a1a1a",height:4,borderRadius:2,overflow:"hidden"}}>
+                      <div style={{background:isLive?"#ff2244":"#333",width:`${pct}%`,height:"100%",transition:"width .3s"}} />
+                    </div>
+                  </div>
+
+                  <div style={{display:"flex",gap:".5rem",marginTop:"1.5rem"}}>
+                    <a href="https://square.link/u/uMf9gish" target="_blank" rel="noreferrer" style={{textDecoration:"none"}}>
+                      <button className="sponsor-cta" style={{display:"flex",alignItems:"center",gap:".4rem",fontSize:".9rem"}}>
+                        ENTER CLASS → PAY VIA SQUARE <IconExtLink size={13}/>
+                      </button>
+                    </a>
+                    <a href={b.infoLink || "#"} target="_blank" rel="noreferrer" style={{textDecoration:"none"}}>
+                      <button style={{fontFamily:"'Barlow Condensed',sans-serif",fontWeight:700,fontSize:".85rem",padding:".6rem 1.2rem",background:"transparent",color:"#888",border:"1px solid #333",borderRadius:"4px",cursor:"pointer",textTransform:"uppercase"}}>
+                        CLASS INFO
+                      </button>
+                    </a>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      );
+    }
+
+    // ── LEADERBOARD ───────────────────────────────────────────────────────────
+    function Leaderboard() {
+      const [filter, setFilter] = useState("all");
+      const data = LEADERBOARD_DATA[filter];
+      const rankBg = {1:"#ffd700",2:"#aaa",3:"#cd7f32"};
+      const rankLabel = {1:"🥇",2:"🥈",3:"🥉"};
+      return (
+        <div>
+          <SectionHead icon={<IconTrophy size={22} color="#ff2244"/>} title="RANKINGS"/>
+          <div style={{display:"flex",gap:".5rem",marginBottom:"1.5rem",flexWrap:"wrap"}}>
+            {[["all","ALL TIME"],["month","THIS MONTH"],["live","LIVE EVENT"]].map(([k,l]) => (
+              <button key={k} className={`tab-btn ${filter===k?"tab-active":""}`} style={{border:"1px solid #1e1e1e",borderRadius:3,fontSize:".85rem"}} onClick={()=>setFilter(k)}>{l}</button>
+            ))}
+          </div>
+          <div style={{display:"grid",gap:".5rem"}}>
+            {data.map((r,i) => (
+              <div key={r.rank} className="fade-up" style={{background:"#111",border:`1px solid ${r.rank<=3?"#ff224420":"#1a1a1a"}`,borderRadius:4,padding:".85rem 1.25rem",display:"flex",alignItems:"center",gap:"1rem",animationDelay:`${i*0.06}s`}}>
+                <div className="rank-badge" style={{background:rankBg[r.rank]?`${rankBg[r.rank]}22`:"#1a1a1a",color:rankBg[r.rank]||"#444",border:`1px solid ${rankBg[r.rank]?rankBg[r.rank]+"44":"#222"}`,fontSize:r.rank<=3?"1.2rem":"1rem",minWidth:"2.2rem"}}>
+                  {rankLabel[r.rank]||`#${r.rank}`}
+                </div>
+                <div className="bebas" style={{flex:1,fontSize:"1.15rem",color:r.rank===1?"#ffd700":r.rank<=3?"#ddd":"#999",letterSpacing:".03em"}}>{r.name}</div>
+                <div style={{display:"flex",gap:"1.5rem",textAlign:"center"}}>
+                  {[["WINS",r.wins,"#ff2244"],["BATTLES",r.battles,"#666"],["WIN RATE",`${r.rate}%`,r.rate>50?"#4ecdc4":"#555"]].map(([l,v,c]) => (
+                    <div key={l}>
+                      <div className="bebas" style={{fontSize:"1.3rem",color:c,lineHeight:1}}>{v}</div>
+                      <div className="barlow" style={{color:"#444",fontSize:".6rem",fontWeight:700,letterSpacing:".1em"}}>{l}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    // ── ARTIST PROFILES ───────────────────────────────────────────────────────
+    function ArtistProfiles() {
+      const [selected, setSelected] = useState(null);
+      return (
+        <div>
+          <SectionHead icon={<IconStar size={22} color="#ff2244"/>} title="ARTIST ROSTER" sub="Canvas Wars 2026 · 6 Selected Competitors"/>
+
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(250px,1fr))",gap:"1rem"}}>
+            {ARTISTS.map((a,i) => (
+              <div key={a.id} className="artist-card fade-up" style={{padding:"1.1rem",cursor:"pointer",animationDelay:`${i*0.07}s`,borderColor:selected===i?"#ff224440":"#1f1f1f"}} onClick={()=>setSelected(selected===i?null:i)}>
+                <div style={{display:"flex",gap:".75rem",alignItems:"center",marginBottom:".75rem"}}>
+                  <div style={{width:44,height:44,borderRadius:3,background:`linear-gradient(135deg,${a.color}22,${a.color}08)`,border:`1px solid ${a.color}33`,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+                    <span className="bebas" style={{color:a.color,fontSize:".95rem"}}>{a.avatar}</span>
+                  </div>
+                  <div>
+                    <div className="bebas" style={{color:"#fff",fontSize:"1rem",letterSpacing:".03em"}}>{a.name}</div>
+                    <div className="barlow" style={{color:"#555",fontSize:".72rem"}}>{a.medium}</div>
+                  </div>
+                </div>
+                <div style={{display:"flex",gap:".4rem",flexWrap:"wrap",marginBottom:".75rem"}}>
+                  {a.tags.map(t=>(
+                    <span key={t} className="barlow" style={{fontSize:".65rem",fontWeight:700,letterSpacing:".08em",padding:"2px 7px",background:"#1a1a1a",border:"1px solid #252525",borderRadius:2,color:"#666"}}>{t}</span>
+                  ))}
+                </div>
+                {selected===i && (
+                  <div className="fade-up">
+                    <div className="barlow" style={{color:"#777",fontSize:".8rem",lineHeight:1.55,marginBottom:".75rem"}}>{a.bio}</div>
+                    <div style={{display:"flex",gap:".5rem"}}>
+                      <a href="#" style={{textDecoration:"none"}}><button className="bid-btn" style={{fontSize:".75rem",padding:".3rem .7rem"}}>MERCH TABLE</button></a>
+                      <a href="#" style={{textDecoration:"none"}}><button className="bid-btn" style={{fontSize:".75rem",padding:".3rem .7rem",borderColor:"#333",color:"#555"}}>SOCIAL ↗</button></a>
+                    </div>
+                  </div>
+                )}
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:".6rem"}}>
+                  <div className="barlow" style={{color:"#444",fontSize:".72rem"}}><span style={{color:"#ff2244",fontWeight:700}}>{a.wins}</span> all-time wins</div>
+                  <IconChevron size={14} color={selected===i?"#ff2244":"#333"} style={{transform:selected===i?"rotate(90deg)":"none",transition:"transform .2s"}}/>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    // ── SPONSORS ──────────────────────────────────────────────────────────────
+    function Sponsors() {
+      return (
+        <div>
+          <SectionHead icon={<IconDollar size={22} color="#ff2244"/>} title="SPONSORSHIP" sub="Canvas Wars 2026 · Medford Park · Medford, OR · June 6"/>
+
+          <div style={{marginBottom:"1.5rem"}}>
+            <div className="barlow" style={{color:"#555",fontSize:".65rem",fontWeight:700,letterSpacing:".2em",marginBottom:".75rem"}}>TIER 1 · TITLE SPONSOR · $300–$500</div>
+            <div className="sponsor-t1 glow-red" style={{borderRadius:4,padding:"2rem",textAlign:"center"}}>
+              <div className="barlow" style={{color:"#555",fontSize:".7rem",fontWeight:700,letterSpacing:".15em"}}>CANVAS WARS 2026 PRESENTED BY</div>
+              <div className="bebas" style={{fontSize:"clamp(1.6rem,4vw,3rem)",color:"#57FF00",letterSpacing:".08em",marginTop:".3rem"}}>[ QuaarkForce QuarkZine ]</div>
+              <div className="barlow" style={{color:"#444",fontSize:".8rem",marginTop:".5rem"}}>Full logo placement · Stage banner · MC intro · Social media tags · Sponsor table</div>
+              <div style={{marginTop:"1.25rem"}}>
+                <button className="sponsor-cta"> TITLE SPONSOR →</button>
+              </div>
+            </div>
+          </div>
+
+          <div style={{marginBottom:"1.5rem"}}>
+            <div className="barlow" style={{color:"#555",fontSize:".65rem",fontWeight:700,letterSpacing:".2em",marginBottom:".75rem"}}>TIER 2 · SUPPORTING SPONSORS · $150–$300</div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(240px,1fr))",gap:"1rem"}}>
+              {[1,2].map(n=>(
+                <div key={n} className="sponsor-t2" style={{borderRadius:4,padding:"1.25rem",textAlign:"center"}}>
+                  <div className="bebas" style={{color:"#C6D8A9",fontSize:"1.6rem",letterSpacing:".05em"}}>Oh's Osaka & Timeless Treasures Hub</div>
+                  <div className="barlow" style={{color:"#333",fontSize:".75rem",marginTop:4}}>Logo · MC shoutout · Program listing</div>
+                  <div style={{marginTop:"1rem"}}><button className="sponsor-cta" style={{fontSize:".8rem",padding:".4rem 1rem"}}>CLAIM SLOT</button></div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div style={{marginBottom:"2rem"}}>
+            <div className="barlow" style={{color:"#555",fontSize:".65rem",fontWeight:700,letterSpacing:".2em",marginBottom:".75rem"}}>TIER 3 · IN-KIND / COMMUNITY · PRODUCT GIFTS OR CONTRIBUTIONS</div>
+            <div style={{display:"flex",flexWrap:"wrap",gap:".5rem"}}>
+              {["IN-KIND PARTNER","IN-KIND PARTNER","COMMUNITY BACKER","COMMUNITY BACKER","ART SUPPLIER","LOCAL BUSINESS"].map((l,i)=>(
+                <div key={i} className="sponsor-t3" style={{borderRadius:3,padding:".5rem 1rem",display:"flex",alignItems:"center",gap:".4rem"}}>
+                  <IconTag size={11} color="#444"/>
+                  <span className="barlow" style={{color:"#444",fontSize:".75rem",fontWeight:600}}>{l}</span>
+                </div>
+              ))}
+              <div style={{background:"#111",border:"1px dashed #2a2a2a",borderRadius:3,padding:".5rem 1rem",cursor:"pointer"}}>
+                <span className="barlow" style={{color:"#ff224455",fontSize:".75rem",fontWeight:600}}>+ ADD YOUR BRAND</span>
+              </div>
+            </div>
+          </div>
+
+          <div style={{background:"#111",border:"1px solid #1e1e1e",borderRadius:4,padding:"1.25rem 1.5rem"}}>
+            <div className="bebas" style={{color:"#888",fontSize:"1.1rem",letterSpacing:".05em",marginBottom:"1rem"}}>SPONSORSHIP TIERS</div>
+            <div style={{display:"grid",gap:".5rem"}}>
+              {[
+                {tier:"T1",label:"Title Sponsor",range:"$300–$500",perks:["Presented By naming rights","Stage banner placement","MC intro shoutout","Social media mentions","Sponsor table at event"]},
+                {tier:"T2",label:"Supporting Sponsor",range:"$150–$300",perks:["Logo on event materials","MC shoutout","Program listing","Social tag"]},
+                {tier:"T3",label:"In-Kind / Community",range:"Product / Gift",perks:["Badge acknowledgment","Program mention","Community recognition"]},
+              ].map(s=>(
+                <div key={s.tier} style={{display:"flex",gap:"1rem",padding:".75rem",background:"#0f0f0f",borderRadius:3,flexWrap:"wrap",alignItems:"flex-start"}}>
+                  <div style={{minWidth:40}}><span className="bebas" style={{color:"#ff2244",fontSize:"1rem"}}>{s.tier}</span></div>
+                  <div style={{flex:1}}>
+                    <div style={{display:"flex",gap:".75rem",alignItems:"baseline",flexWrap:"wrap"}}>
+                      <div className="barlow" style={{color:"#888",fontWeight:700,fontSize:".85rem"}}>{s.label}</div>
+                      <div className="bebas" style={{color:"#ff2244",fontSize:"1rem"}}>{s.range}</div>
+                    </div>
+                    <div style={{display:"flex",gap:".4rem",flexWrap:"wrap",marginTop:4}}>
+                      {s.perks.map(p=>(<span key={p} className="barlow" style={{color:"#555",fontSize:".72rem"}}>· {p}</span>))}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div style={{marginTop:"1.25rem",display:"flex",gap:".75rem",flexWrap:"wrap"}}>
+              <button className="sponsor-cta" style={{display:"flex",alignItems:"center",gap:".5rem"}}>
+                <IconMic size={15}/> BECOME A SPONSOR
+              </button>
+              <a href="mailto:jawsatak47@gmail.com" style={{textDecoration:"none"}}>
+                <button style={{fontFamily:"'Barlow Condensed',sans-serif",fontWeight:700,fontSize:".9rem",padding:".6rem 1.2rem",background:"transparent",border:"1px solid #2a2a2a",color:"#555",borderRadius:2,cursor:"pointer"}}>
+                  CONTACT US
+                </button>
+              </a>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // ── ROOT COMPONENT ────────────────────────────────────────────────────────
+    function CanvasWars() {
+      // DEFAULT LANDING TAB SET TO "photos"
+      const [tab, setTab] = useState("photos");
+      const [votes, setVotes] = useState({});
+      const [votedFor, setVotedFor] = useState(null);
+
+      return (
+        <div style={{background:"#0d0d0d",minHeight:"100vh"}}>
+          <div className="noise-layer"/>
+          <div className="scanlines"/>
+
+          {/* HERO */}
+          <div style={{background:"linear-gradient(180deg,#111 0%,#0d0d0d 100%)",borderBottom:"1px solid #1e1e1e",padding:"1.5rem clamp(1rem,4vw,3rem)"}}>
+            <div style={{maxWidth:1300,margin:"0 auto"}}>
+              <div style={{display:"flex",flexWrap:"wrap",alignItems:"center",justifyContent:"space-between",gap:"1rem"}}>
+                <div>
+                  <div style={{display:"flex",alignItems:"center",gap:"1rem",flexWrap:"wrap"}}>
+                    <div className="bebas glow-red" style={{fontSize:"clamp(2.5rem,7vw,5rem)",lineHeight:.9,letterSpacing:".02rem",color:"#ff2244",background:"rgba(255,34,68,0.05)",padding:"0 10px",borderRadius:"4px",border:"1px solid rgba(255,34,68,0.2)"}}>CANVAS</div>
+                    <div className="bebas" style={{fontSize:"clamp(2.5rem,7vw,5rem)",lineHeight:.9,letterSpacing:".02rem",color:"#fff"}}>WARS</div>
+                    <div style={{width:"2px",height:"40px",background:"#222",margin:"0 10px"}}></div>
+                    <div style={{display:"flex",alignItems:"center",gap:".5rem"}}>
+                      <div className="bebas" style={{fontSize:"clamp(2rem,5vw,3.8rem)",lineHeight:.6,letterSpacing:".02rem",color:"#00d2ff"}}>QUARK</div>
+                      <div className="bebas" style={{fontSize:"clamp(2rem,5vw,3.8rem)",lineHeight:.6,letterSpacing:".02rem",color:"#ffd700"}}>FORCE</div>
+                    </div>
+                  </div>
+                  
+                  <div className="barlow" style={{color:"#555",fontSize:".8rem",marginTop:"0.75rem",letterSpacing:".02rem"}}>
+                    Life Art Oh's Osaka Timeless Treasures Hub Blick Art QuarkForce · 4041 CraterLake ave Medford· Medford PARK · MEDFORD, OR
+                  </div>
+                </div>
+
+                <div style={{textAlign:"right"}}>
+                  <div style={{display:"flex",alignItems:"center",gap:".5rem",justifyContent:"flex-end",marginBottom:".25rem"}}>
+                    <span className="barlow glow-red" style={{background:"#ff2244",color:"#fff",fontSize:".65rem",fontWeight:700,padding:"2px 6px",borderRadius:"3px",letterSpacing:".05rem"}}>• LIVE</span>
+                    <span className="barlow" style={{color:"#888",fontSize:".75rem",fontWeight:500}}>June 6, 2026 · 11AM-7PM</span>
+                  </div>
+                  <div className="barlow" style={{color:"#444",fontSize:".65rem"}}>6 Artists · 24×24 Canvas · Timed Battle</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* TABS */}
+          <div style={{borderBottom:"1px solid #1e1e1e",background:"#0d0d0d",position:"sticky",top:0,zIndex:100}}>
+            <div style={{maxWidth:1300,margin:"0 auto",padding:"0 clamp(.5rem,3vw,2rem)",display:"flex",alignItems:"center",overflowX:"auto"}}>
+              <div style={{display:"flex", flexGrow: 1}}>
+                {TABS.map(t=>(
+                  <button key={t.id} className={`tab-btn ${tab===t.id?"tab-active":""}`} onClick={()=>setTab(t.id)}>{t.label}</button>
+                ))}
+              </div>
+              <ThemeAudio />
+            </div>
+          </div>
+
+          {/* MAIN TAB SWITCHER */}
+          <div style={{maxWidth:1300,margin:"0 auto",padding:"2rem clamp(1rem,4vw,3rem) 4rem"}}>
+            {tab==="photos"   && <EventPhotos />}
+            {tab==="live"     && <LiveBattle votes={votes} setVotes={setVotes} votedFor={votedFor} setVotedFor={setVotedFor}/>}
+            {tab==="weekly"   && <WeeklyClasses/>}
+            {tab==="leaders"  && <Leaderboard/>}
+            {tab==="artists"  && <ArtistProfiles/>}
+            {tab==="sponsors" && <Sponsors/>}
+          </div>
+
+          {/* FOOTER */}
+          <div style={{borderTop:"1px solid #1a1a1a", padding:"1.25rem clamp(1rem,4vw,3rem)", display:"flex", flexWrap:"wrap", justifyContent:"space-between", alignItems:"center", gap:".75rem"}}>
+            <div className="bebas" style={{color:"#333", fontSize:"1rem", letterSpacing:".1em"}}>CANVAS WARS Life Art Oh's Osaka Timeless Treasures Hub Blick Art QuarkForce · 4041 CraterLake ave Medford· MEDFORD, OR · 2026</div>
+            <div className="barlow" style={{color:"#2a2a2a", fontSize:".75rem"}}>No oils · No aerosols · No hazardous materials · Media release required · Artist entry $40 · Vendor fee $40</div>
+          </div>
+
+          {/* REGISTRATION & PAYMENTS SECTION */}
+          <div className="container" style={{padding: "20px"}}> 
+            <h3 style={{ fontFamily: 'Bebas Neue', color: '#B20000', marginTop: 0 }}>
+              💳 REGISTRATION & PAYMENTS
+            </h3>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
+              <a href="https://square.link/u/8pB8RjJW" className="btn-main" style={{ fontSize: '14px', textAlign: 'center', textDecoration: 'none', display: 'block' , color: 'green'  }}>
+                ARTIST ENTRY ($40)
+              </a>
+              <a href="https://square.link/u/o0uEAH8Z" className="btn-main" style={{ fontSize: '14px', background: 'var(--ora)', textAlign: 'center', textDecoration: 'none', display: 'block' , color: 'green' }}>
+                VENDOR FEE ($40)
+              </a>
+              <a href="https://canvaswars.myspreadshop.com/" className="btn-main" style={{ fontSize: '14px', background: 'var(--blu)', textAlign: 'center', textDecoration: 'none', display: 'block' , color: 'green'  }}>
+                CanvasWars Merch
+              </a>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById("root"));
+    root.render(<CanvasWars/>);
+  </script>
+</body>
+</html>
